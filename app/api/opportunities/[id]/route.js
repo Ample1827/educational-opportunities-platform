@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
     }
 
     const db = await getDatabase()
-    const collection = db.collection('opportunities')
+    const collection = db.collection('tecnologicos')
     
     const opportunity = await collection.findOne({ _id: new ObjectId(id) })
 
@@ -53,7 +53,7 @@ export async function PUT(request, { params }) {
     }
 
     const db = await getDatabase()
-    const collection = db.collection('opportunities')
+    const collection = db.collection('tecnologicos')
 
     const { _id, ...updateData } = body
     updateData.updatedAt = new Date()
@@ -98,7 +98,7 @@ export async function DELETE(request, { params }) {
     }
 
     const db = await getDatabase()
-    const collection = db.collection('opportunities')
+    const collection = db.collection('tecnologicos')
     
     const result = await collection.deleteOne({ _id: new ObjectId(id) })
 

@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   try {
     const db = await getDatabase()
-    const collection = db.collection('opportunities')
+    const collection = db.collection('tecnologicos')
 
     const [
       totalOpportunities,

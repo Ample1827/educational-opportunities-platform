@@ -18,7 +18,7 @@ export async function GET(request) {
     const skip = (page - 1) * limit
 
     const db = await getDatabase()
-    const collection = db.collection('opportunities')
+    const collection = db.collection('tecnologicos')
 
     let query = {}
     
@@ -87,7 +87,7 @@ export async function POST(request) {
     }
 
     const db = await getDatabase()
-    const collection = db.collection('opportunities')
+    const collection = db.collection('tecnologicos')
 
     const newOpportunity = {
       ...body,

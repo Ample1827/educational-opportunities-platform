@@ -7,7 +7,7 @@ export async function GET(request) {
     const type = searchParams.get('type')
 
     const db = await getDatabase()
-    const collection = db.collection('opportunities')
+    const collection = db.collection('tecnologicos')
 
     let field
     switch(type) {
