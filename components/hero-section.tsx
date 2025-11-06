@@ -8,24 +8,16 @@ export function HeroSection() {
     <section className="relative overflow-hidden min-h-screen flex items-center">
       {/* Static Background Image */}
       <div className="absolute inset-0 -z-10">
-        <img
-          src="/hero-university-1.jpg"
-          alt="Universidad background"
-          className="w-full h-full object-cover"
-        />
+        <img src="/hero-university-1.jpg" alt="Universidad background" className="w-full h-full object-cover" />
 
         {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/50"></div>
 
         {/* Colored gradient overlay for brand colors */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 via-transparent to-emerald-500/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0C2B4E]/20 via-transparent to-[#1D546C]/20"></div>
 
         {/* Animated gradient circles */}
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-gradient-to-br from-green-500/30 to-emerald-500/30 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-        <div
-          className="absolute bottom-20 right-1/4 w-96 h-96 bg-gradient-to-br from-emerald-500/30 to-teal-500/30 rounded-full blur-3xl opacity-20 animate-pulse"
-          style={{ animationDelay: "1.5s" }}
-        ></div>
+        {/* Removed to let background shine */}
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 w-full relative z-10">
