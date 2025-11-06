@@ -169,238 +169,242 @@ export default function SearchPage() {
       <Navigation />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-card border border-border rounded-lg p-4 sm:p-6 mb-8">
-          <h2 className="text-xl font-bold mb-6 text-foreground">Filtros de búsqueda</h2>
+          <h2 className="text-xl font-bold mb-6 text-foreground text-center">Filtros de búsqueda</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-            <div className="min-w-0">
-              <label className="block text-sm font-medium mb-2 text-foreground">Estado</label>
-              <Select
-                value={selectedState}
-                onValueChange={(value) => handleFilterChange(setSelectedState, value)}
-                disabled={filterOptionsLoading}
-              >
-                <SelectTrigger className="w-full truncate">
-                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {estados.map((state) => (
-                    <SelectItem key={state} value={state}>
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="min-w-0">
-              <label className="block text-sm font-medium mb-2 text-foreground">Universidad</label>
-              <Select
-                value={selectedUniversity}
-                onValueChange={(value) => handleFilterChange(setSelectedUniversity, value)}
-                disabled={filterOptionsLoading}
-              >
-                <SelectTrigger className="w-full truncate">
-                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {universidades.map((uni) => (
-                    <SelectItem key={uni} value={uni}>
-                      {uni}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="min-w-0">
-              <label className="block text-sm font-medium mb-2 text-foreground">Modalidad</label>
-              <Select
-                value={selectedModalidad}
-                onValueChange={(value) => handleFilterChange(setSelectedModalidad, value)}
-                disabled={filterOptionsLoading}
-              >
-                <SelectTrigger className="w-full truncate">
-                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {modalidades.map((mod) => (
-                    <SelectItem key={mod} value={mod}>
-                      {mod}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="min-w-0">
-              <label className="block text-sm font-medium mb-2 text-foreground">Grado</label>
-              <Select
-                value={selectedGrado}
-                onValueChange={(value) => handleFilterChange(setSelectedGrado, value)}
-                disabled={filterOptionsLoading}
-              >
-                <SelectTrigger className="w-full truncate">
-                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {grados.map((grado) => (
-                    <SelectItem key={grado} value={grado}>
-                      {grado}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="min-w-0">
-              <label className="block text-sm font-medium mb-2 text-foreground">Carrera</label>
-              <Input
-                placeholder="Buscar carrera..."
-                value={searchCarrera}
-                onChange={(e) => handleFilterChange(setSearchCarrera, e.target.value)}
-                className="bg-background w-full truncate"
-              />
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="w-full sm:w-auto border-border text-foreground hover:bg-muted bg-transparent"
-          >
-            Limpiar filtros
-          </Button>
-        </div>
-
-        {/* Results info */}
-        <div className="mb-6">
-          <p className="text-sm text-muted-foreground">
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Cargando...
-              </span>
-            ) : pagination ? (
-              <>
-                Mostrando <span className="font-bold text-foreground">{opportunities.length}</span> de{" "}
-                <span className="font-bold text-foreground">{pagination.total.toLocaleString()}</span> resultados
-                {pagination.page > 1 && (
-                  <span>
-                    {" "}
-                    (Página {pagination.page} de {pagination.totalPages})
-                  </span>
-                )}
-              </>
-            ) : null}
-          </p>
-        </div>
-
-        {/* Loading state */}
-        {loading && (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-muted-foreground">Cargando oportunidades...</p>
-          </div>
-        )}
-
-        {/* Results table */}
-        {!loading && opportunities.length > 0 && (
-          <div className="bg-card border border-border rounded-lg overflow-hidden mb-8">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-b border-border bg-muted/50">
-                    <TableHead className="font-bold text-foreground">Estado</TableHead>
-                    <TableHead className="font-bold text-foreground">Universidad</TableHead>
-                    <TableHead className="font-bold text-foreground">Carrera</TableHead>
-                    <TableHead className="font-bold text-foreground">Modalidad</TableHead>
-                    <TableHead className="font-bold text-foreground">Grado</TableHead>
-                    <TableHead className="font-bold text-foreground text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {opportunities.map((opp) => (
-                    <TableRow key={opp._id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                      <TableCell className="text-foreground">{opp.Estado}</TableCell>
-                      <TableCell className="text-foreground text-sm">{opp["Nombre del tecnológico"]}</TableCell>
-                      <TableCell className="text-foreground">{opp.Carrera}</TableCell>
-                      <TableCell className="text-foreground">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                          {opp.Modalidad}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-foreground">{opp["Grado que otorga"]}</TableCell>
-                      <TableCell className="text-right">
-                        <Link href={`/opportunity/${opp._id}`}>
-                          <Button size="sm" variant="ghost" className="text-primary hover:bg-primary/10">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && opportunities.length === 0 && (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
-            <p className="text-muted-foreground text-lg">No se encontraron resultados</p>
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              className="mt-4 border-border text-foreground hover:bg-muted bg-transparent"
-            >
-              Limpiar filtros
-            </Button>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && !loading && (
-          <div className="flex justify-center items-center gap-2 flex-wrap">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={!pagination.hasPrevPage}
-              className="border-border"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-
-            {getPageNumbers().map((pageNum, i) =>
-              typeof pageNum === "number" ? (
-                <Button
-                  key={pageNum}
-                  variant={currentPage === pageNum ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={currentPage === pageNum ? "bg-primary text-primary-foreground" : "border-border"}
+          <div className="flex flex-col items-center justify-center gap-3 sm:gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 w-full">
+              <div className="min-w-0">
+                <label className="block text-sm font-medium mb-2 text-foreground">Estado</label>
+                <Select
+                  value={selectedState}
+                  onValueChange={(value) => handleFilterChange(setSelectedState, value)}
+                  disabled={filterOptionsLoading}
                 >
-                  {pageNum}
-                </Button>
-              ) : (
-                <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
-                  {pageNum}
-                </span>
-              ),
-            )}
+                  <SelectTrigger className="w-full truncate">
+                    <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {estados.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))}
-              disabled={!pagination.hasNextPage}
-              className="border-border"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+              <div className="min-w-0">
+                <label className="block text-sm font-medium mb-2 text-foreground">Universidad</label>
+                <Select
+                  value={selectedUniversity}
+                  onValueChange={(value) => handleFilterChange(setSelectedUniversity, value)}
+                  disabled={filterOptionsLoading}
+                >
+                  <SelectTrigger className="w-full truncate">
+                    <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {universidades.map((uni) => (
+                      <SelectItem key={uni} value={uni}>
+                        {uni}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="min-w-0">
+                <label className="block text-sm font-medium mb-2 text-foreground">Modalidad</label>
+                <Select
+                  value={selectedModalidad}
+                  onValueChange={(value) => handleFilterChange(setSelectedModalidad, value)}
+                  disabled={filterOptionsLoading}
+                >
+                  <SelectTrigger className="w-full truncate">
+                    <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modalidades.map((mod) => (
+                      <SelectItem key={mod} value={mod}>
+                        {mod}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="min-w-0">
+                <label className="block text-sm font-medium mb-2 text-foreground">Grado</label>
+                <Select
+                  value={selectedGrado}
+                  onValueChange={(value) => handleFilterChange(setSelectedGrado, value)}
+                  disabled={filterOptionsLoading}
+                >
+                  <SelectTrigger className="w-full truncate">
+                    <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {grados.map((grado) => (
+                      <SelectItem key={grado} value={grado}>
+                        {grado}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="min-w-0">
+                <label className="block text-sm font-medium mb-2 text-foreground">Carrera</label>
+                <Input
+                  placeholder="Buscar carrera..."
+                  value={searchCarrera}
+                  onChange={(e) => handleFilterChange(setSearchCarrera, e.target.value)}
+                  className="bg-background w-full truncate"
+                />
+              </div>
+            </div>
+
+            <div className="w-full flex justify-center sm:justify-start">
+              <Button
+                variant="outline"
+                onClick={handleReset}
+                className="w-full sm:w-auto border-border text-foreground hover:bg-muted bg-transparent"
+              >
+                Limpiar filtros
+              </Button>
+            </div>
           </div>
-        )}
+
+          {/* Results info */}
+          <div className="mb-6">
+            <p className="text-sm text-muted-foreground">
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Cargando...
+                </span>
+              ) : pagination ? (
+                <>
+                  Mostrando <span className="font-bold text-foreground">{opportunities.length}</span> de{" "}
+                  <span className="font-bold text-foreground">{pagination.total.toLocaleString()}</span> resultados
+                  {pagination.page > 1 && (
+                    <span>
+                      {" "}
+                      (Página {pagination.page} de {pagination.totalPages})
+                    </span>
+                  )}
+                </>
+              ) : null}
+            </p>
+          </div>
+
+          {/* Loading state */}
+          {loading && (
+            <div className="bg-card border border-border rounded-lg p-12 text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+              <p className="text-muted-foreground">Cargando oportunidades...</p>
+            </div>
+          )}
+
+          {/* Results table */}
+          {!loading && opportunities.length > 0 && (
+            <div className="bg-card border border-border rounded-lg overflow-hidden mb-8">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-b border-border bg-muted/50">
+                      <TableHead className="font-bold text-foreground">Estado</TableHead>
+                      <TableHead className="font-bold text-foreground">Universidad</TableHead>
+                      <TableHead className="font-bold text-foreground">Carrera</TableHead>
+                      <TableHead className="font-bold text-foreground">Modalidad</TableHead>
+                      <TableHead className="font-bold text-foreground">Grado</TableHead>
+                      <TableHead className="font-bold text-foreground text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {opportunities.map((opp) => (
+                      <TableRow key={opp._id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                        <TableCell className="text-foreground">{opp.Estado}</TableCell>
+                        <TableCell className="text-foreground text-sm">{opp["Nombre del tecnológico"]}</TableCell>
+                        <TableCell className="text-foreground">{opp.Carrera}</TableCell>
+                        <TableCell className="text-foreground">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                            {opp.Modalidad}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-foreground">{opp["Grado que otorga"]}</TableCell>
+                        <TableCell className="text-right">
+                          <Link href={`/opportunity/${opp._id}`}>
+                            <Button size="sm" variant="ghost" className="text-primary hover:bg-primary/10">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!loading && opportunities.length === 0 && (
+            <div className="bg-card border border-border rounded-lg p-12 text-center">
+              <p className="text-muted-foreground text-lg">No se encontraron resultados</p>
+              <Button
+                variant="outline"
+                onClick={handleReset}
+                className="mt-4 border-border text-foreground hover:bg-muted bg-transparent"
+              >
+                Limpiar filtros
+              </Button>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && !loading && (
+            <div className="flex justify-center items-center gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={!pagination.hasPrevPage}
+                className="border-border"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+
+              {getPageNumbers().map((pageNum, i) =>
+                typeof pageNum === "number" ? (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={currentPage === pageNum ? "bg-primary text-primary-foreground" : "border-border"}
+                  >
+                    {pageNum}
+                  </Button>
+                ) : (
+                  <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
+                    {pageNum}
+                  </span>
+                ),
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))}
+                disabled={!pagination.hasNextPage}
+                className="border-border"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
+        </div>
       </main>
       <Footer />
     </div>
