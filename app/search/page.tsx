@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -38,13 +38,13 @@ export default function SearchPage() {
   const [selectedModalidad, setSelectedModalidad] = useState<string>("")
   const [selectedGrado, setSelectedGrado] = useState<string>("")
   const [searchCarrera, setSearchCarrera] = useState<string>("")
-  
+
   // Data states
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
   const [pagination, setPagination] = useState<PaginationData | null>(null)
   const [loading, setLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  
+
   // Filter options from API
   const [estados, setEstados] = useState<string[]>([])
   const [universidades, setUniversidades] = useState<string[]>([])
@@ -57,17 +57,17 @@ export default function SearchPage() {
     const loadFilterOptions = async () => {
       try {
         const [estadosRes, univRes, modalidadesRes, gradosRes] = await Promise.all([
-          fetch('/api/filters?type=estados'),
-          fetch('/api/filters?type=universidades'),
-          fetch('/api/filters?type=modalidades'),
-          fetch('/api/filters?type=grados')
+          fetch("/api/filters?type=estados"),
+          fetch("/api/filters?type=universidades"),
+          fetch("/api/filters?type=modalidades"),
+          fetch("/api/filters?type=grados"),
         ])
 
         const [estadosData, univData, modalidadesData, gradosData] = await Promise.all([
           estadosRes.json(),
           univRes.json(),
           modalidadesRes.json(),
-          gradosRes.json()
+          gradosRes.json(),
         ])
 
         if (estadosData.success) setEstados(estadosData.data)
@@ -75,7 +75,7 @@ export default function SearchPage() {
         if (modalidadesData.success) setModalidades(modalidadesData.data)
         if (gradosData.success) setGrados(gradosData.data)
       } catch (error) {
-        console.error('Error loading filter options:', error)
+        console.error("Error loading filter options:", error)
       } finally {
         setFilterOptionsLoading(false)
       }
@@ -93,13 +93,13 @@ export default function SearchPage() {
     setLoading(true)
     try {
       const params = new URLSearchParams()
-      if (selectedState) params.append('estado', selectedState)
-      if (selectedUniversity) params.append('universidad', selectedUniversity)
-      if (selectedModalidad) params.append('modalidad', selectedModalidad)
-      if (selectedGrado) params.append('grado', selectedGrado)
-      if (searchCarrera) params.append('carrera', searchCarrera)
-      params.append('page', currentPage.toString())
-      params.append('limit', '25')
+      if (selectedState) params.append("estado", selectedState)
+      if (selectedUniversity) params.append("universidad", selectedUniversity)
+      if (selectedModalidad) params.append("modalidad", selectedModalidad)
+      if (selectedGrado) params.append("grado", selectedGrado)
+      if (searchCarrera) params.append("carrera", searchCarrera)
+      params.append("page", currentPage.toString())
+      params.append("limit", "25")
 
       const response = await fetch(`/api/opportunities?${params}`)
       const data = await response.json()
@@ -108,11 +108,11 @@ export default function SearchPage() {
         setOpportunities(data.data)
         setPagination(data.pagination)
       } else {
-        console.error('API Error:', data.error)
+        console.error("API Error:", data.error)
         setOpportunities([])
       }
     } catch (error) {
-      console.error('Error fetching opportunities:', error)
+      console.error("Error fetching opportunities:", error)
       setOpportunities([])
     } finally {
       setLoading(false)
@@ -130,39 +130,35 @@ export default function SearchPage() {
 
   const handleFilterChange = (setter: (value: string) => void, value: string) => {
     setter(value)
-    setCurrentPage(1) // Reset to first page when filter changes
+    setCurrentPage(1)
   }
 
   // Generate page numbers for pagination
   const getPageNumbers = () => {
     if (!pagination) return []
-    
+
     const totalPages = pagination.totalPages
     const current = pagination.page
     const pages: (number | string)[] = []
 
     if (totalPages <= 7) {
-      // Show all pages if 7 or fewer
       return Array.from({ length: totalPages }, (_, i) => i + 1)
     }
 
-    // Always show first page
     pages.push(1)
 
     if (current > 3) {
-      pages.push('...')
+      pages.push("...")
     }
 
-    // Show pages around current page
     for (let i = Math.max(2, current - 1); i <= Math.min(current + 1, totalPages - 1); i++) {
       pages.push(i)
     }
 
     if (current < totalPages - 2) {
-      pages.push('...')
+      pages.push("...")
     }
 
-    // Always show last page
     pages.push(totalPages)
 
     return pages
@@ -172,19 +168,18 @@ export default function SearchPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Filters */}
-        <div className="bg-card border border-border rounded-lg p-6 mb-8">
+        <div className="bg-card border border-border rounded-lg p-4 sm:p-6 mb-8">
           <h2 className="text-xl font-bold mb-6 text-foreground">Filtros de búsqueda</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+            <div className="min-w-0">
               <label className="block text-sm font-medium mb-2 text-foreground">Estado</label>
-              <Select 
-                value={selectedState} 
+              <Select
+                value={selectedState}
                 onValueChange={(value) => handleFilterChange(setSelectedState, value)}
                 disabled={filterOptionsLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full truncate">
                   <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -197,14 +192,14 @@ export default function SearchPage() {
               </Select>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label className="block text-sm font-medium mb-2 text-foreground">Universidad</label>
-              <Select 
-                value={selectedUniversity} 
+              <Select
+                value={selectedUniversity}
                 onValueChange={(value) => handleFilterChange(setSelectedUniversity, value)}
                 disabled={filterOptionsLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full truncate">
                   <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -217,14 +212,14 @@ export default function SearchPage() {
               </Select>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label className="block text-sm font-medium mb-2 text-foreground">Modalidad</label>
-              <Select 
-                value={selectedModalidad} 
+              <Select
+                value={selectedModalidad}
                 onValueChange={(value) => handleFilterChange(setSelectedModalidad, value)}
                 disabled={filterOptionsLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full truncate">
                   <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -237,14 +232,14 @@ export default function SearchPage() {
               </Select>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label className="block text-sm font-medium mb-2 text-foreground">Grado</label>
-              <Select 
-                value={selectedGrado} 
+              <Select
+                value={selectedGrado}
                 onValueChange={(value) => handleFilterChange(setSelectedGrado, value)}
                 disabled={filterOptionsLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full truncate">
                   <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
@@ -257,13 +252,13 @@ export default function SearchPage() {
               </Select>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label className="block text-sm font-medium mb-2 text-foreground">Carrera</label>
               <Input
                 placeholder="Buscar carrera..."
                 value={searchCarrera}
                 onChange={(e) => handleFilterChange(setSearchCarrera, e.target.value)}
-                className="bg-background"
+                className="bg-background w-full truncate"
               />
             </div>
           </div>
@@ -271,7 +266,7 @@ export default function SearchPage() {
           <Button
             variant="outline"
             onClick={handleReset}
-            className="border-border text-foreground hover:bg-muted bg-transparent"
+            className="w-full sm:w-auto border-border text-foreground hover:bg-muted bg-transparent"
           >
             Limpiar filtros
           </Button>
@@ -290,7 +285,10 @@ export default function SearchPage() {
                 Mostrando <span className="font-bold text-foreground">{opportunities.length}</span> de{" "}
                 <span className="font-bold text-foreground">{pagination.total.toLocaleString()}</span> resultados
                 {pagination.page > 1 && (
-                  <span> (Página {pagination.page} de {pagination.totalPages})</span>
+                  <span>
+                    {" "}
+                    (Página {pagination.page} de {pagination.totalPages})
+                  </span>
                 )}
               </>
             ) : null}
@@ -374,8 +372,8 @@ export default function SearchPage() {
               <ChevronLeft className="w-4 h-4" />
             </Button>
 
-            {getPageNumbers().map((pageNum, i) => (
-              typeof pageNum === 'number' ? (
+            {getPageNumbers().map((pageNum, i) =>
+              typeof pageNum === "number" ? (
                 <Button
                   key={pageNum}
                   variant={currentPage === pageNum ? "default" : "outline"}
@@ -389,8 +387,8 @@ export default function SearchPage() {
                 <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
                   {pageNum}
                 </span>
-              )
-            ))}
+              ),
+            )}
 
             <Button
               variant="outline"
