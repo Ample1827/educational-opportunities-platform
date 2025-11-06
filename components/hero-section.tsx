@@ -5,19 +5,24 @@ import { ArrowRight, Sparkles } from "lucide-react"
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center">
+    <section className="relative overflow-hidden min-h-screen flex items-center bg-gray-900">
       {/* Static Background Image */}
-      <div className="absolute inset-0 -z-10">
-        <img src="/hero-university-1.jpg" alt="Universidad background" className="w-full h-full object-cover" />
-
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/hero-university-1.jpg" 
+          alt="Universidad background" 
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error("Image failed to load from /hero-university-1.jpg");
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/50"></div>
 
         {/* Colored gradient overlay for brand colors */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0C2B4E]/20 via-transparent to-[#1D546C]/20"></div>
-
-        {/* Animated gradient circles */}
-        {/* Removed to let background shine */}
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 w-full relative z-10">
@@ -71,7 +76,7 @@ export function HeroSection() {
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent -z-10"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-5"></div>
     </section>
   )
 }
