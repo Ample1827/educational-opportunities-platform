@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -8,120 +8,116 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
+import { ChevronLeft, ChevronRight, Eye, Loader2 } from "lucide-react"
 
-// Mock data
-const MOCK_OPPORTUNITIES = [
-  {
-    id: 1,
-    estado: "Aguascalientes",
-    universidad: "Instituto Tecnológico de Aguascalientes",
-    carrera: "Ingeniería Electrónica",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-  },
-  {
-    id: 2,
-    estado: "Jalisco",
-    universidad: "Instituto Tecnológico de Guadalajara",
-    carrera: "Ingeniería en Sistemas Computacionales",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-  },
-  {
-    id: 3,
-    estado: "CDMX",
-    universidad: "Instituto Tecnológico de México",
-    carrera: "Ingeniería Industrial",
-    modalidad: "Mixta",
-    grado: "Maestría",
-    url: "https://example.com",
-  },
-  {
-    id: 4,
-    estado: "Nuevo León",
-    universidad: "Instituto Tecnológico de Monterrey",
-    carrera: "Ingeniería Mecánica",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-  },
-  {
-    id: 5,
-    estado: "Veracruz",
-    universidad: "Instituto Tecnológico de Veracruz",
-    carrera: "Ingeniería Química",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-  },
-  {
-    id: 6,
-    estado: "Aguascalientes",
-    universidad: "Instituto Tecnológico de Aguascalientes",
-    carrera: "Administración de Empresas",
-    modalidad: "No Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-  },
-  {
-    id: 7,
-    estado: "Jalisco",
-    universidad: "Instituto Tecnológico de Guadalajara",
-    carrera: "Ingeniería Civil",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-  },
-  {
-    id: 8,
-    estado: "CDMX",
-    universidad: "Instituto Tecnológico de México",
-    carrera: "Ingeniería en Telemática",
-    modalidad: "Escolarizada",
-    grado: "Maestría",
-    url: "https://example.com",
-  },
-]
+interface Opportunity {
+  _id: string
+  Estado: string
+  "Nombre del tecnológico": string
+  "Clave oficial": string
+  Modalidad: string
+  "Grado que otorga": string
+  Carrera: string
+  "URL del tecnológico": string
+  "URL de la carrera": string
+}
 
-const STATES = ["Aguascalientes", "Jalisco", "CDMX", "Nuevo León", "Veracruz"]
-const MODALIDADES = ["Escolarizada", "No Escolarizada", "Mixta"]
-const GRADOS = ["Licenciatura", "Maestría", "Ingeniería"]
+interface PaginationData {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPrevPage: boolean
+}
 
 export default function SearchPage() {
+  // Filter states
   const [selectedState, setSelectedState] = useState<string>("")
   const [selectedUniversity, setSelectedUniversity] = useState<string>("")
   const [selectedModalidad, setSelectedModalidad] = useState<string>("")
   const [selectedGrado, setSelectedGrado] = useState<string>("")
   const [searchCarrera, setSearchCarrera] = useState<string>("")
+  
+  // Data states
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([])
+  const [pagination, setPagination] = useState<PaginationData | null>(null)
+  const [loading, setLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 25
+  
+  // Filter options from API
+  const [estados, setEstados] = useState<string[]>([])
+  const [universidades, setUniversidades] = useState<string[]>([])
+  const [modalidades, setModalidades] = useState<string[]>([])
+  const [grados, setGrados] = useState<string[]>([])
+  const [filterOptionsLoading, setFilterOptionsLoading] = useState(true)
 
-  // Get unique universities from mock data
-  const universities = useMemo(() => {
-    return Array.from(new Set(MOCK_OPPORTUNITIES.map((o) => o.universidad)))
+  // Load filter options on mount
+  useEffect(() => {
+    const loadFilterOptions = async () => {
+      try {
+        const [estadosRes, univRes, modalidadesRes, gradosRes] = await Promise.all([
+          fetch('/api/filters?type=estados'),
+          fetch('/api/filters?type=universidades'),
+          fetch('/api/filters?type=modalidades'),
+          fetch('/api/filters?type=grados')
+        ])
+
+        const [estadosData, univData, modalidadesData, gradosData] = await Promise.all([
+          estadosRes.json(),
+          univRes.json(),
+          modalidadesRes.json(),
+          gradosRes.json()
+        ])
+
+        if (estadosData.success) setEstados(estadosData.data)
+        if (univData.success) setUniversidades(univData.data)
+        if (modalidadesData.success) setModalidades(modalidadesData.data)
+        if (gradosData.success) setGrados(gradosData.data)
+      } catch (error) {
+        console.error('Error loading filter options:', error)
+      } finally {
+        setFilterOptionsLoading(false)
+      }
+    }
+
+    loadFilterOptions()
   }, [])
 
-  // Filter opportunities
-  const filteredOpportunities = useMemo(() => {
-    return MOCK_OPPORTUNITIES.filter((opp) => {
-      if (selectedState && opp.estado !== selectedState) return false
-      if (selectedUniversity && opp.universidad !== selectedUniversity) return false
-      if (selectedModalidad && opp.modalidad !== selectedModalidad) return false
-      if (selectedGrado && opp.grado !== selectedGrado) return false
-      if (searchCarrera && !opp.carrera.toLowerCase().includes(searchCarrera.toLowerCase())) return false
-      return true
-    })
-  }, [selectedState, selectedUniversity, selectedModalidad, selectedGrado, searchCarrera])
+  // Fetch opportunities when filters or page change
+  useEffect(() => {
+    fetchOpportunities()
+  }, [selectedState, selectedUniversity, selectedModalidad, selectedGrado, searchCarrera, currentPage])
 
-  // Pagination
-  const totalPages = Math.ceil(filteredOpportunities.length / itemsPerPage)
-  const paginatedOpportunities = filteredOpportunities.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  )
+  const fetchOpportunities = async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (selectedState) params.append('estado', selectedState)
+      if (selectedUniversity) params.append('universidad', selectedUniversity)
+      if (selectedModalidad) params.append('modalidad', selectedModalidad)
+      if (selectedGrado) params.append('grado', selectedGrado)
+      if (searchCarrera) params.append('carrera', searchCarrera)
+      params.append('page', currentPage.toString())
+      params.append('limit', '25')
+
+      const response = await fetch(`/api/opportunities?${params}`)
+      const data = await response.json()
+
+      if (data.success) {
+        setOpportunities(data.data)
+        setPagination(data.pagination)
+      } else {
+        console.error('API Error:', data.error)
+        setOpportunities([])
+      }
+    } catch (error) {
+      console.error('Error fetching opportunities:', error)
+      setOpportunities([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleReset = () => {
     setSelectedState("")
@@ -130,6 +126,46 @@ export default function SearchPage() {
     setSelectedGrado("")
     setSearchCarrera("")
     setCurrentPage(1)
+  }
+
+  const handleFilterChange = (setter: (value: string) => void, value: string) => {
+    setter(value)
+    setCurrentPage(1) // Reset to first page when filter changes
+  }
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    if (!pagination) return []
+    
+    const totalPages = pagination.totalPages
+    const current = pagination.page
+    const pages: (number | string)[] = []
+
+    if (totalPages <= 7) {
+      // Show all pages if 7 or fewer
+      return Array.from({ length: totalPages }, (_, i) => i + 1)
+    }
+
+    // Always show first page
+    pages.push(1)
+
+    if (current > 3) {
+      pages.push('...')
+    }
+
+    // Show pages around current page
+    for (let i = Math.max(2, current - 1); i <= Math.min(current + 1, totalPages - 1); i++) {
+      pages.push(i)
+    }
+
+    if (current < totalPages - 2) {
+      pages.push('...')
+    }
+
+    // Always show last page
+    pages.push(totalPages)
+
+    return pages
   }
 
   return (
@@ -143,12 +179,16 @@ export default function SearchPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Estado</label>
-              <Select value={selectedState} onValueChange={setSelectedState}>
+              <Select 
+                value={selectedState} 
+                onValueChange={(value) => handleFilterChange(setSelectedState, value)}
+                disabled={filterOptionsLoading}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar" />
+                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {STATES.map((state) => (
+                  {estados.map((state) => (
                     <SelectItem key={state} value={state}>
                       {state}
                     </SelectItem>
@@ -159,12 +199,16 @@ export default function SearchPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Universidad</label>
-              <Select value={selectedUniversity} onValueChange={setSelectedUniversity}>
+              <Select 
+                value={selectedUniversity} 
+                onValueChange={(value) => handleFilterChange(setSelectedUniversity, value)}
+                disabled={filterOptionsLoading}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar" />
+                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {universities.map((uni) => (
+                  {universidades.map((uni) => (
                     <SelectItem key={uni} value={uni}>
                       {uni}
                     </SelectItem>
@@ -175,12 +219,16 @@ export default function SearchPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Modalidad</label>
-              <Select value={selectedModalidad} onValueChange={setSelectedModalidad}>
+              <Select 
+                value={selectedModalidad} 
+                onValueChange={(value) => handleFilterChange(setSelectedModalidad, value)}
+                disabled={filterOptionsLoading}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar" />
+                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {MODALIDADES.map((mod) => (
+                  {modalidades.map((mod) => (
                     <SelectItem key={mod} value={mod}>
                       {mod}
                     </SelectItem>
@@ -191,12 +239,16 @@ export default function SearchPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Grado</label>
-              <Select value={selectedGrado} onValueChange={setSelectedGrado}>
+              <Select 
+                value={selectedGrado} 
+                onValueChange={(value) => handleFilterChange(setSelectedGrado, value)}
+                disabled={filterOptionsLoading}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar" />
+                  <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {GRADOS.map((grado) => (
+                  {grados.map((grado) => (
                     <SelectItem key={grado} value={grado}>
                       {grado}
                     </SelectItem>
@@ -210,10 +262,7 @@ export default function SearchPage() {
               <Input
                 placeholder="Buscar carrera..."
                 value={searchCarrera}
-                onChange={(e) => {
-                  setSearchCarrera(e.target.value)
-                  setCurrentPage(1)
-                }}
+                onChange={(e) => handleFilterChange(setSearchCarrera, e.target.value)}
                 className="bg-background"
               />
             </div>
@@ -231,13 +280,33 @@ export default function SearchPage() {
         {/* Results info */}
         <div className="mb-6">
           <p className="text-sm text-muted-foreground">
-            Mostrando <span className="font-bold text-foreground">{paginatedOpportunities.length}</span> de{" "}
-            <span className="font-bold text-foreground">{filteredOpportunities.length}</span> resultados
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Cargando...
+              </span>
+            ) : pagination ? (
+              <>
+                Mostrando <span className="font-bold text-foreground">{opportunities.length}</span> de{" "}
+                <span className="font-bold text-foreground">{pagination.total.toLocaleString()}</span> resultados
+                {pagination.page > 1 && (
+                  <span> (Página {pagination.page} de {pagination.totalPages})</span>
+                )}
+              </>
+            ) : null}
           </p>
         </div>
 
+        {/* Loading state */}
+        {loading && (
+          <div className="bg-card border border-border rounded-lg p-12 text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-muted-foreground">Cargando oportunidades...</p>
+          </div>
+        )}
+
         {/* Results table */}
-        {filteredOpportunities.length > 0 ? (
+        {!loading && opportunities.length > 0 && (
           <div className="bg-card border border-border rounded-lg overflow-hidden mb-8">
             <div className="overflow-x-auto">
               <Table>
@@ -252,19 +321,19 @@ export default function SearchPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedOpportunities.map((opp) => (
-                    <TableRow key={opp.id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                      <TableCell className="text-foreground">{opp.estado}</TableCell>
-                      <TableCell className="text-foreground text-sm">{opp.universidad}</TableCell>
-                      <TableCell className="text-foreground">{opp.carrera}</TableCell>
+                  {opportunities.map((opp) => (
+                    <TableRow key={opp._id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                      <TableCell className="text-foreground">{opp.Estado}</TableCell>
+                      <TableCell className="text-foreground text-sm">{opp["Nombre del tecnológico"]}</TableCell>
+                      <TableCell className="text-foreground">{opp.Carrera}</TableCell>
                       <TableCell className="text-foreground">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                          {opp.modalidad}
+                          {opp.Modalidad}
                         </span>
                       </TableCell>
-                      <TableCell className="text-foreground">{opp.grado}</TableCell>
+                      <TableCell className="text-foreground">{opp["Grado que otorga"]}</TableCell>
                       <TableCell className="text-right">
-                        <Link href={`/opportunity/${opp.id}`}>
+                        <Link href={`/opportunity/${opp._id}`}>
                           <Button size="sm" variant="ghost" className="text-primary hover:bg-primary/10">
                             <Eye className="w-4 h-4" />
                           </Button>
@@ -276,7 +345,10 @@ export default function SearchPage() {
               </Table>
             </div>
           </div>
-        ) : (
+        )}
+
+        {/* Empty state */}
+        {!loading && opportunities.length === 0 && (
           <div className="bg-card border border-border rounded-lg p-12 text-center">
             <p className="text-muted-foreground text-lg">No se encontraron resultados</p>
             <Button
@@ -290,35 +362,41 @@ export default function SearchPage() {
         )}
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2">
+        {pagination && pagination.totalPages > 1 && !loading && (
+          <div className="flex justify-center items-center gap-2 flex-wrap">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              disabled={!pagination.hasPrevPage}
               className="border-border"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
 
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <Button
-                key={i + 1}
-                variant={currentPage === i + 1 ? "default" : "outline"}
-                size="sm"
-                onClick={() => setCurrentPage(i + 1)}
-                className={currentPage === i + 1 ? "bg-primary text-primary-foreground" : "border-border"}
-              >
-                {i + 1}
-              </Button>
+            {getPageNumbers().map((pageNum, i) => (
+              typeof pageNum === 'number' ? (
+                <Button
+                  key={pageNum}
+                  variant={currentPage === pageNum ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={currentPage === pageNum ? "bg-primary text-primary-foreground" : "border-border"}
+                >
+                  {pageNum}
+                </Button>
+              ) : (
+                <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
+                  {pageNum}
+                </span>
+              )
             ))}
 
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))}
+              disabled={!pagination.hasNextPage}
               className="border-border"
             >
               <ChevronRight className="w-4 h-4" />

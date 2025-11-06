@@ -1,27 +1,72 @@
-import { Card } from "@/components/ui/card"
+"use client"
 
-const STATS = [
-  { label: "Programas", value: "2,450+" },
-  { label: "Instituciones", value: "254" },
-  { label: "Estados", value: "32" },
-]
+import { useState, useEffect } from "react"
+import { Loader2 } from "lucide-react"
+
+interface Stats {
+  totalOpportunities: number
+  totalUniversities: number
+  totalStates: number
+  totalCareers: number
+}
 
 export function StatsSection() {
-  return (
-    <section className="py-16 sm:py-24 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          {STATS.map((stat) => (
-            <Card
-              key={stat.label}
-              className="p-8 text-center border border-border bg-card hover:shadow-lg transition-shadow"
-            >
-              <p className="text-muted-foreground text-sm font-medium mb-2">{stat.label}</p>
-              <p className="text-4xl font-bold text-primary">{stat.value}</p>
-            </Card>
-          ))}
-        </div>
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setStats(data.data)
+        }
+        setLoading(false)
+      })
+      .catch(error => {
+        console.error('Error loading stats:', error)
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-card border border-border rounded-xl p-8 text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+          </div>
+        ))}
       </div>
-    </section>
+    )
+  }
+
+  if (!stats) {
+    return null
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <div className="bg-card border border-border rounded-xl p-8 text-center hover:shadow-lg transition-shadow">
+        <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+          {stats.totalOpportunities.toLocaleString()}+
+        </div>
+        <div className="text-lg text-muted-foreground">Programas</div>
+      </div>
+
+      <div className="bg-card border border-border rounded-xl p-8 text-center hover:shadow-lg transition-shadow">
+        <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+          {stats.totalUniversities}
+        </div>
+        <div className="text-lg text-muted-foreground">Tecnológicos</div>
+      </div>
+
+      <div className="bg-card border border-border rounded-xl p-8 text-center hover:shadow-lg transition-shadow">
+        <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
+          {stats.totalStates}
+        </div>
+        <div className="text-lg text-muted-foreground">Estados</div>
+      </div>
+    </div>
   )
 }
