@@ -1,0 +1,332 @@
+"use client"
+
+import { useState, useMemo } from "react"
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import Link from "next/link"
+import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
+
+// Mock data
+const MOCK_OPPORTUNITIES = [
+  {
+    id: 1,
+    estado: "Aguascalientes",
+    universidad: "Instituto Tecnológico de Aguascalientes",
+    carrera: "Ingeniería Electrónica",
+    modalidad: "Escolarizada",
+    grado: "Licenciatura",
+    url: "https://example.com",
+  },
+  {
+    id: 2,
+    estado: "Jalisco",
+    universidad: "Instituto Tecnológico de Guadalajara",
+    carrera: "Ingeniería en Sistemas Computacionales",
+    modalidad: "Escolarizada",
+    grado: "Licenciatura",
+    url: "https://example.com",
+  },
+  {
+    id: 3,
+    estado: "CDMX",
+    universidad: "Instituto Tecnológico de México",
+    carrera: "Ingeniería Industrial",
+    modalidad: "Mixta",
+    grado: "Maestría",
+    url: "https://example.com",
+  },
+  {
+    id: 4,
+    estado: "Nuevo León",
+    universidad: "Instituto Tecnológico de Monterrey",
+    carrera: "Ingeniería Mecánica",
+    modalidad: "Escolarizada",
+    grado: "Licenciatura",
+    url: "https://example.com",
+  },
+  {
+    id: 5,
+    estado: "Veracruz",
+    universidad: "Instituto Tecnológico de Veracruz",
+    carrera: "Ingeniería Química",
+    modalidad: "Escolarizada",
+    grado: "Licenciatura",
+    url: "https://example.com",
+  },
+  {
+    id: 6,
+    estado: "Aguascalientes",
+    universidad: "Instituto Tecnológico de Aguascalientes",
+    carrera: "Administración de Empresas",
+    modalidad: "No Escolarizada",
+    grado: "Licenciatura",
+    url: "https://example.com",
+  },
+  {
+    id: 7,
+    estado: "Jalisco",
+    universidad: "Instituto Tecnológico de Guadalajara",
+    carrera: "Ingeniería Civil",
+    modalidad: "Escolarizada",
+    grado: "Licenciatura",
+    url: "https://example.com",
+  },
+  {
+    id: 8,
+    estado: "CDMX",
+    universidad: "Instituto Tecnológico de México",
+    carrera: "Ingeniería en Telemática",
+    modalidad: "Escolarizada",
+    grado: "Maestría",
+    url: "https://example.com",
+  },
+]
+
+const STATES = ["Aguascalientes", "Jalisco", "CDMX", "Nuevo León", "Veracruz"]
+const MODALIDADES = ["Escolarizada", "No Escolarizada", "Mixta"]
+const GRADOS = ["Licenciatura", "Maestría", "Ingeniería"]
+
+export default function SearchPage() {
+  const [selectedState, setSelectedState] = useState<string>("")
+  const [selectedUniversity, setSelectedUniversity] = useState<string>("")
+  const [selectedModalidad, setSelectedModalidad] = useState<string>("")
+  const [selectedGrado, setSelectedGrado] = useState<string>("")
+  const [searchCarrera, setSearchCarrera] = useState<string>("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 25
+
+  // Get unique universities from mock data
+  const universities = useMemo(() => {
+    return Array.from(new Set(MOCK_OPPORTUNITIES.map((o) => o.universidad)))
+  }, [])
+
+  // Filter opportunities
+  const filteredOpportunities = useMemo(() => {
+    return MOCK_OPPORTUNITIES.filter((opp) => {
+      if (selectedState && opp.estado !== selectedState) return false
+      if (selectedUniversity && opp.universidad !== selectedUniversity) return false
+      if (selectedModalidad && opp.modalidad !== selectedModalidad) return false
+      if (selectedGrado && opp.grado !== selectedGrado) return false
+      if (searchCarrera && !opp.carrera.toLowerCase().includes(searchCarrera.toLowerCase())) return false
+      return true
+    })
+  }, [selectedState, selectedUniversity, selectedModalidad, selectedGrado, searchCarrera])
+
+  // Pagination
+  const totalPages = Math.ceil(filteredOpportunities.length / itemsPerPage)
+  const paginatedOpportunities = filteredOpportunities.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  )
+
+  const handleReset = () => {
+    setSelectedState("")
+    setSelectedUniversity("")
+    setSelectedModalidad("")
+    setSelectedGrado("")
+    setSearchCarrera("")
+    setCurrentPage(1)
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Filters */}
+        <div className="bg-card border border-border rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-bold mb-6 text-foreground">Filtros de búsqueda</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-foreground">Estado</label>
+              <Select value={selectedState} onValueChange={setSelectedState}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATES.map((state) => (
+                    <SelectItem key={state} value={state}>
+                      {state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-foreground">Universidad</label>
+              <Select value={selectedUniversity} onValueChange={setSelectedUniversity}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar" />
+                </SelectTrigger>
+                <SelectContent>
+                  {universities.map((uni) => (
+                    <SelectItem key={uni} value={uni}>
+                      {uni}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-foreground">Modalidad</label>
+              <Select value={selectedModalidad} onValueChange={setSelectedModalidad}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar" />
+                </SelectTrigger>
+                <SelectContent>
+                  {MODALIDADES.map((mod) => (
+                    <SelectItem key={mod} value={mod}>
+                      {mod}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-foreground">Grado</label>
+              <Select value={selectedGrado} onValueChange={setSelectedGrado}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar" />
+                </SelectTrigger>
+                <SelectContent>
+                  {GRADOS.map((grado) => (
+                    <SelectItem key={grado} value={grado}>
+                      {grado}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-foreground">Carrera</label>
+              <Input
+                placeholder="Buscar carrera..."
+                value={searchCarrera}
+                onChange={(e) => {
+                  setSearchCarrera(e.target.value)
+                  setCurrentPage(1)
+                }}
+                className="bg-background"
+              />
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            onClick={handleReset}
+            className="border-border text-foreground hover:bg-muted bg-transparent"
+          >
+            Limpiar filtros
+          </Button>
+        </div>
+
+        {/* Results info */}
+        <div className="mb-6">
+          <p className="text-sm text-muted-foreground">
+            Mostrando <span className="font-bold text-foreground">{paginatedOpportunities.length}</span> de{" "}
+            <span className="font-bold text-foreground">{filteredOpportunities.length}</span> resultados
+          </p>
+        </div>
+
+        {/* Results table */}
+        {filteredOpportunities.length > 0 ? (
+          <div className="bg-card border border-border rounded-lg overflow-hidden mb-8">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-b border-border bg-muted/50">
+                    <TableHead className="font-bold text-foreground">Estado</TableHead>
+                    <TableHead className="font-bold text-foreground">Universidad</TableHead>
+                    <TableHead className="font-bold text-foreground">Carrera</TableHead>
+                    <TableHead className="font-bold text-foreground">Modalidad</TableHead>
+                    <TableHead className="font-bold text-foreground">Grado</TableHead>
+                    <TableHead className="font-bold text-foreground text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedOpportunities.map((opp) => (
+                    <TableRow key={opp.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                      <TableCell className="text-foreground">{opp.estado}</TableCell>
+                      <TableCell className="text-foreground text-sm">{opp.universidad}</TableCell>
+                      <TableCell className="text-foreground">{opp.carrera}</TableCell>
+                      <TableCell className="text-foreground">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                          {opp.modalidad}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-foreground">{opp.grado}</TableCell>
+                      <TableCell className="text-right">
+                        <Link href={`/opportunity/${opp.id}`}>
+                          <Button size="sm" variant="ghost" className="text-primary hover:bg-primary/10">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-card border border-border rounded-lg p-12 text-center">
+            <p className="text-muted-foreground text-lg">No se encontraron resultados</p>
+            <Button
+              variant="outline"
+              onClick={handleReset}
+              className="mt-4 border-border text-foreground hover:bg-muted bg-transparent"
+            >
+              Limpiar filtros
+            </Button>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="border-border"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <Button
+                key={i + 1}
+                variant={currentPage === i + 1 ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentPage(i + 1)}
+                className={currentPage === i + 1 ? "bg-primary text-primary-foreground" : "border-border"}
+              >
+                {i + 1}
+              </Button>
+            ))}
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="border-border"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </main>
+      <Footer />
+    </div>
+  )
+}
