@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("Adalromero99@gmail.com")
+  const [password, setPassword] = useState("admin123")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
