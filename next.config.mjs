@@ -8,6 +8,16 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'bold-org.ghost.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.collegetransitions.com',
+      },
+    ],
   },
 }
 

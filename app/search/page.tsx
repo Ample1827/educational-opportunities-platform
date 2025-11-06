@@ -45,14 +45,20 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Filter options from API
-  const [estados, setEstados] = useState<string[]>([])
-  const [universidades, setUniversidades] = useState<string[]>([])
-  const [modalidades, setModalidades] = useState<string[]>([])
-  const [grados, setGrados] = useState<string[]>([])
+  // Filter options - ALL available options (for initial load)
+  const [allEstados, setAllEstados] = useState<string[]>([])
+  const [allUniversidades, setAllUniversidades] = useState<string[]>([])
+  const [allModalidades, setAllModalidades] = useState<string[]>([])
+  const [allGrados, setAllGrados] = useState<string[]>([])
+  
+  // Filtered options - Based on current selections
+  const [filteredUniversidades, setFilteredUniversidades] = useState<string[]>([])
+  const [filteredModalidades, setFilteredModalidades] = useState<string[]>([])
+  const [filteredGrados, setFilteredGrados] = useState<string[]>([])
+  
   const [filterOptionsLoading, setFilterOptionsLoading] = useState(true)
 
-  // Load filter options on mount
+  // Load ALL filter options on mount
   useEffect(() => {
     const loadFilterOptions = async () => {
       try {
@@ -70,10 +76,19 @@ export default function SearchPage() {
           gradosRes.json(),
         ])
 
-        if (estadosData.success) setEstados(estadosData.data)
-        if (univData.success) setUniversidades(univData.data)
-        if (modalidadesData.success) setModalidades(modalidadesData.data)
-        if (gradosData.success) setGrados(gradosData.data)
+        if (estadosData.success) setAllEstados(estadosData.data)
+        if (univData.success) {
+          setAllUniversidades(univData.data)
+          setFilteredUniversidades(univData.data)
+        }
+        if (modalidadesData.success) {
+          setAllModalidades(modalidadesData.data)
+          setFilteredModalidades(modalidadesData.data)
+        }
+        if (gradosData.success) {
+          setAllGrados(gradosData.data)
+          setFilteredGrados(gradosData.data)
+        }
       } catch (error) {
         console.error("Error loading filter options:", error)
       } finally {
@@ -83,6 +98,56 @@ export default function SearchPage() {
 
     loadFilterOptions()
   }, [])
+
+  // Update filtered options when Estado changes
+  useEffect(() => {
+    if (!selectedState) {
+      // No state selected - show all options
+      setFilteredUniversidades(allUniversidades)
+      setFilteredModalidades(allModalidades)
+      setFilteredGrados(allGrados)
+      return
+    }
+
+    // Fetch filtered options based on selected state
+    const loadFilteredOptions = async () => {
+      try {
+        const params = new URLSearchParams()
+        params.append('estado', selectedState)
+        
+        const [univRes, modalidadesRes, gradosRes] = await Promise.all([
+          fetch(`/api/filters?type=universidades&${params}`),
+          fetch(`/api/filters?type=modalidades&${params}`),
+          fetch(`/api/filters?type=grados&${params}`)
+        ])
+
+        const [univData, modalidadesData, gradosData] = await Promise.all([
+          univRes.json(),
+          modalidadesRes.json(),
+          gradosRes.json()
+        ])
+
+        if (univData.success) setFilteredUniversidades(univData.data)
+        if (modalidadesData.success) setFilteredModalidades(modalidadesData.data)
+        if (gradosData.success) setFilteredGrados(gradosData.data)
+
+        // Clear selections that are no longer valid
+        if (selectedUniversity && !univData.data.includes(selectedUniversity)) {
+          setSelectedUniversity("")
+        }
+        if (selectedModalidad && !modalidadesData.data.includes(selectedModalidad)) {
+          setSelectedModalidad("")
+        }
+        if (selectedGrado && !gradosData.data.includes(selectedGrado)) {
+          setSelectedGrado("")
+        }
+      } catch (error) {
+        console.error("Error loading filtered options:", error)
+      }
+    }
+
+    loadFilteredOptions()
+  }, [selectedState])
 
   // Fetch opportunities when filters or page change
   useEffect(() => {
@@ -126,6 +191,10 @@ export default function SearchPage() {
     setSelectedGrado("")
     setSearchCarrera("")
     setCurrentPage(1)
+    // Reset filtered options to all options
+    setFilteredUniversidades(allUniversidades)
+    setFilteredModalidades(allModalidades)
+    setFilteredGrados(allGrados)
   }
 
   const handleFilterChange = (setter: (value: string) => void, value: string) => {
@@ -184,7 +253,7 @@ export default function SearchPage() {
                     <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {estados.map((state) => (
+                    {allEstados.map((state) => (
                       <SelectItem key={state} value={state}>
                         {state}
                       </SelectItem>
@@ -194,17 +263,27 @@ export default function SearchPage() {
               </div>
 
               <div className="min-w-0">
-                <label className="block text-sm font-medium mb-2 text-foreground">Universidad</label>
+                <label className="block text-sm font-medium mb-2 text-foreground">
+                  Universidad {selectedState && `(${filteredUniversidades.length})`}
+                </label>
                 <Select
                   value={selectedUniversity}
                   onValueChange={(value) => handleFilterChange(setSelectedUniversity, value)}
-                  disabled={filterOptionsLoading}
+                  disabled={filterOptionsLoading || filteredUniversidades.length === 0}
                 >
                   <SelectTrigger className="w-full truncate">
-                    <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
+                    <SelectValue 
+                      placeholder={
+                        filterOptionsLoading 
+                          ? "Cargando..." 
+                          : filteredUniversidades.length === 0 
+                            ? "No disponible" 
+                            : "Seleccionar"
+                      } 
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {universidades.map((uni) => (
+                    {filteredUniversidades.map((uni) => (
                       <SelectItem key={uni} value={uni}>
                         {uni}
                       </SelectItem>
@@ -214,17 +293,27 @@ export default function SearchPage() {
               </div>
 
               <div className="min-w-0">
-                <label className="block text-sm font-medium mb-2 text-foreground">Modalidad</label>
+                <label className="block text-sm font-medium mb-2 text-foreground">
+                  Modalidad {selectedState && `(${filteredModalidades.length})`}
+                </label>
                 <Select
                   value={selectedModalidad}
                   onValueChange={(value) => handleFilterChange(setSelectedModalidad, value)}
-                  disabled={filterOptionsLoading}
+                  disabled={filterOptionsLoading || filteredModalidades.length === 0}
                 >
                   <SelectTrigger className="w-full truncate">
-                    <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
+                    <SelectValue 
+                      placeholder={
+                        filterOptionsLoading 
+                          ? "Cargando..." 
+                          : filteredModalidades.length === 0 
+                            ? "No disponible" 
+                            : "Seleccionar"
+                      } 
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {modalidades.map((mod) => (
+                    {filteredModalidades.map((mod) => (
                       <SelectItem key={mod} value={mod}>
                         {mod}
                       </SelectItem>
@@ -234,17 +323,27 @@ export default function SearchPage() {
               </div>
 
               <div className="min-w-0">
-                <label className="block text-sm font-medium mb-2 text-foreground">Grado</label>
+                <label className="block text-sm font-medium mb-2 text-foreground">
+                  Grado {selectedState && `(${filteredGrados.length})`}
+                </label>
                 <Select
                   value={selectedGrado}
                   onValueChange={(value) => handleFilterChange(setSelectedGrado, value)}
-                  disabled={filterOptionsLoading}
+                  disabled={filterOptionsLoading || filteredGrados.length === 0}
                 >
                   <SelectTrigger className="w-full truncate">
-                    <SelectValue placeholder={filterOptionsLoading ? "Cargando..." : "Seleccionar"} />
+                    <SelectValue 
+                      placeholder={
+                        filterOptionsLoading 
+                          ? "Cargando..." 
+                          : filteredGrados.length === 0 
+                            ? "No disponible" 
+                            : "Seleccionar"
+                      } 
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {grados.map((grado) => (
+                    {filteredGrados.map((grado) => (
                       <SelectItem key={grado} value={grado}>
                         {grado}
                       </SelectItem>
@@ -256,11 +355,16 @@ export default function SearchPage() {
               <div className="min-w-0">
                 <label className="block text-sm font-medium mb-2 text-foreground">Carrera</label>
                 <Input
-                  placeholder="Buscar carrera..."
+                  placeholder="Ej: ingeniería..."
                   value={searchCarrera}
                   onChange={(e) => handleFilterChange(setSearchCarrera, e.target.value)}
                   className="bg-background w-full truncate"
                 />
+                {searchCarrera && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    💡 Búsqueda flexible - tolerante a errores
+                  </p>
+                )}
               </div>
             </div>
 
@@ -352,6 +456,11 @@ export default function SearchPage() {
           {!loading && opportunities.length === 0 && (
             <div className="bg-card border border-border rounded-lg p-12 text-center">
               <p className="text-muted-foreground text-lg">No se encontraron resultados</p>
+              {searchCarrera && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Intenta simplificar tu búsqueda o revisa la ortografía
+                </p>
+              )}
               <Button
                 variant="outline"
                 onClick={handleReset}

@@ -5,6 +5,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
+    const estado = searchParams.get('estado') // NEW: Filter by estado
 
     const db = await getDatabase()
     const collection = db.collection('tecnologicos')
@@ -33,7 +34,14 @@ export async function GET(request) {
         )
     }
 
-    const values = await collection.distinct(field)
+    // Build query - if estado is provided, only return options for that estado
+    let query = {}
+    if (estado && type !== 'estados') {
+      query.Estado = estado
+    }
+
+    // Get distinct values with optional estado filter
+    const values = await collection.distinct(field, query)
     const sorted = values.filter(v => v).sort()
 
     return NextResponse.json({
