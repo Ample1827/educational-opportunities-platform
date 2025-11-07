@@ -55,10 +55,18 @@ export function HeroSection() {
                 <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
-            <button className="px-8 py-3 rounded-lg font-semibold bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white/20 hover:border-white/50 text-white transition-all duration-300 hover:scale-105">
-              Conocer más
-            </button>
+
+            <a
+              href="https://static.vecteezy.com/system/resources/previews/032/159/817/non_2x/100-percent-perfect-rubber-grunge-stamp-seal-vector.jpg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button className="px-8 py-3 rounded-lg font-semibold bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white/20 hover:border-white/50 text-white transition-all duration-300 hover:scale-105">
+                Conocer más
+              </button>
+            </a>
           </div>
+
 
           {/* Trust section */}
           <div className="pt-8 border-t border-white/20 w-full">
