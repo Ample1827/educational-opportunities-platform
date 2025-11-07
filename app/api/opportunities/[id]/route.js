@@ -5,13 +5,9 @@ import { ObjectId } from 'mongodb'
 // GET - Fetch single opportunity by ID
 export async function GET(request, { params }) {
   try {
-    // CRITICAL FIX: await params before accessing its properties
-    const { id } = await params
-    
-    console.log('Fetching opportunity with ID:', id)
+    const { id } = params
     
     if (!ObjectId.isValid(id)) {
-      console.error('Invalid ObjectId:', id)
       return NextResponse.json(
         { success: false, error: 'Invalid opportunity ID' },
         { status: 400 }
@@ -21,11 +17,7 @@ export async function GET(request, { params }) {
     const db = await getDatabase()
     const collection = db.collection('tecnologicos')
     
-    console.log('Searching in collection: tecnologicos')
-    
     const opportunity = await collection.findOne({ _id: new ObjectId(id) })
-
-    console.log('Found opportunity:', opportunity ? 'YES' : 'NO')
 
     if (!opportunity) {
       return NextResponse.json(
@@ -34,15 +26,9 @@ export async function GET(request, { params }) {
       )
     }
 
-    // Convert ObjectId to string for JSON serialization
-    const serializedOpportunity = {
-      ...opportunity,
-      _id: opportunity._id.toString()
-    }
-
     return NextResponse.json({
       success: true,
-      data: serializedOpportunity
+      data: opportunity
     })
   } catch (error) {
     console.error('Error fetching opportunity:', error)
@@ -56,8 +42,7 @@ export async function GET(request, { params }) {
 // PUT - Update opportunity
 export async function PUT(request, { params }) {
   try {
-    // CRITICAL FIX: await params before accessing its properties
-    const { id } = await params
+    const { id } = params
     const body = await request.json()
     
     if (!ObjectId.isValid(id)) {
@@ -86,15 +71,10 @@ export async function PUT(request, { params }) {
     }
 
     const updated = await collection.findOne({ _id: new ObjectId(id) })
-    
-    const serializedUpdated = {
-      ...updated,
-      _id: updated?._id.toString()
-    }
 
     return NextResponse.json({
       success: true,
-      data: serializedUpdated
+      data: updated
     })
   } catch (error) {
     console.error('Error updating opportunity:', error)
@@ -108,8 +88,7 @@ export async function PUT(request, { params }) {
 // DELETE - Remove opportunity
 export async function DELETE(request, { params }) {
   try {
-    // CRITICAL FIX: await params before accessing its properties
-    const { id } = await params
+    const { id } = params
     
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(

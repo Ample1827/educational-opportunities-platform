@@ -40,15 +40,10 @@ function UniversityModal({
           <div className="p-6 sm:p-8">
             <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
               <Award className="w-6 h-6 text-primary" />
-              Información del Tecnológico
+              {opportunity["Nombre del tecnológico"]}
             </h2>
 
             <div className="space-y-4 mb-6">
-              <div className="bg-muted/50 rounded-lg p-4 border border-border">
-                <p className="text-sm font-medium text-muted-foreground mb-1">Nombre completo</p>
-                <p className="text-foreground font-semibold">{opportunity["Nombre del tecnológico"]}</p>
-              </div>
-
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
@@ -58,7 +53,7 @@ function UniversityModal({
               </div>
 
               <div className="flex items-start gap-3">
-                <span className="text-sm font-mono text-muted-foreground mt-1">#</span>
+                <span className="text-sm font-mono text-muted-foreground mt-1">ID:</span>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Clave oficial</p>
                   <p className="text-lg font-mono font-semibold text-foreground">{opportunity["Clave oficial"]}</p>
@@ -81,8 +76,8 @@ function UniversityModal({
                 </div>
               </div>
 
-              <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
-                <p className="text-sm font-medium text-muted-foreground mb-2">Carrera</p>
+              <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                <p className="text-sm font-medium text-muted-foreground mb-2">Carrera destacada</p>
                 <p className="text-foreground font-semibold">{opportunity.Carrera}</p>
               </div>
             </div>
@@ -99,7 +94,7 @@ function UniversityModal({
               </a>
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg font-medium transition-colors"
+                className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
               >
                 Cerrar
               </button>
@@ -119,38 +114,21 @@ export default function OpportunityDetailPage() {
   const [relatedOpportunities, setRelatedOpportunities] = useState<Opportunity[]>([])
   const [similarUniversities, setSimilarUniversities] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [showUniversityModal, setShowUniversityModal] = useState(false)
 
   useEffect(() => {
     const fetchOpportunity = async () => {
       try {
         setLoading(true)
-        setError(null)
-        
-        console.log("Fetching opportunity with ID:", id) // Debug log
-        console.log("Full URL:", `/api/opportunities/${id}`) // Debug log
-        
         const response = await fetch(`/api/opportunities/${id}`)
-        
-        console.log("Response status:", response.status) // Debug log
-        console.log("Response ok:", response.ok) // Debug log
-        
         const data = await response.json()
-        
-        console.log("API Response:", data) // Debug log
-        console.log("Success:", data.success) // Debug log
-        console.log("Data exists:", !!data.data) // Debug log
 
-        if (data.success && data.data) {
+        if (data.success) {
           setOpportunity(data.data)
 
-          // Fetch related opportunities from the same university
-          const relatedParams = new URLSearchParams({
-            universidad: data.data["Nombre del tecnológico"],
-            limit: "5"
-          })
-          const relatedResponse = await fetch(`/api/opportunities?${relatedParams}`)
+          const relatedResponse = await fetch(
+            `/api/opportunities?universidad=${encodeURIComponent(data.data["Nombre del tecnológico"])}`,
+          )
           const relatedData = await relatedResponse.json()
 
           if (relatedData.success) {
@@ -158,31 +136,24 @@ export default function OpportunityDetailPage() {
             setRelatedOpportunities(filtered)
           }
 
-          // Fetch similar universities from the same state
-          const similarParams = new URLSearchParams({
-            estado: data.data.Estado,
-            limit: "20"
-          })
-          const similarResponse = await fetch(`/api/opportunities?${similarParams}`)
+          const similarResponse = await fetch(
+            `/api/opportunities?estado=${encodeURIComponent(data.data.Estado)}&limit=6`,
+          )
           const similarData = await similarResponse.json()
 
           if (similarData.success) {
-            // Get unique universities from the same state, excluding current one
             const uniqueUniversities = Array.from(
               new Map(
                 similarData.data
                   .filter((opp: Opportunity) => opp["Nombre del tecnológico"] !== data.data["Nombre del tecnológico"])
-                  .map((opp: Opportunity) => [opp["Nombre del tecnológico"], opp])
-              ).values()
+                  .map((opp: Opportunity) => [opp["Nombre del tecnológico"], opp]),
+              ).values(),
             ).slice(0, 3)
             setSimilarUniversities(uniqueUniversities)
           }
-        } else {
-          setError("No se encontró la oportunidad")
         }
       } catch (error) {
         console.error("Error fetching opportunity:", error)
-        setError(error instanceof Error ? error.message : "Error al cargar la oportunidad")
       } finally {
         setLoading(false)
       }
@@ -190,9 +161,6 @@ export default function OpportunityDetailPage() {
 
     if (id) {
       fetchOpportunity()
-    } else {
-      setError("ID de oportunidad no válido")
-      setLoading(false)
     }
   }, [id])
 
@@ -215,16 +183,13 @@ export default function OpportunityDetailPage() {
     )
   }
 
-  if (error || !opportunity) {
+  if (!opportunity) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              {error || "Oportunidad no encontrada"}
-            </h1>
-            <p className="text-muted-foreground mb-6">ID: {id}</p>
+            <h1 className="text-2xl font-bold text-foreground mb-4">Oportunidad no encontrada</h1>
             <Link href="/search">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Volver a búsqueda</Button>
             </Link>
@@ -310,7 +275,7 @@ export default function OpportunityDetailPage() {
               className="w-full flex items-center justify-center gap-2 border-2"
             >
               <Award className="w-5 h-5" />
-              Más info
+              Acciones
             </Button>
           </div>
         </Card>
@@ -343,7 +308,7 @@ export default function OpportunityDetailPage() {
 
         {similarUniversities.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground mb-6">Otros tecnológicos en {opportunity.Estado}</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Otras universidades en {opportunity.Estado}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {similarUniversities.map((uni) => (
                 <Card key={uni._id} className="border border-border bg-card p-6 hover:shadow-lg transition-shadow">
@@ -352,9 +317,9 @@ export default function OpportunityDetailPage() {
                       {uni.Estado}
                     </span>
                   </div>
-                  <h3 className="font-bold text-foreground mb-3 line-clamp-3 text-sm">{uni["Nombre del tecnológico"]}</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    <span className="font-semibold">Programa:</span> {uni.Carrera}
+                  <h3 className="font-bold text-foreground mb-3 line-clamp-3">{uni["Nombre del tecnológico"]}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    <span className="font-semibold">Carrera:</span> {uni.Carrera}
                   </p>
                   <p className="text-xs text-muted-foreground mb-4 font-mono">{uni["Clave oficial"]}</p>
                   <Link href={`/opportunity/${uni._id}`}>
