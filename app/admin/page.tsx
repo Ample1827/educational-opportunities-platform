@@ -10,6 +10,7 @@ import { DeleteConfirmModal } from "@/components/admin/delete-confirm-modal"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
+import { AdminStats } from "@/components/admin/admin-stats"
 
 interface Opportunity {
   id: number
@@ -105,6 +106,9 @@ export default function AdminPage() {
   return (
     <AdminLayout onLogout={handleLogout}>
       <div className="space-y-6">
+        {/* Stats section */}
+        <AdminStats opportunities={opportunities} />
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
