@@ -15,45 +15,81 @@ interface CreateOpportunityModalProps {
   onCreateSuccess: (opportunity: any) => void
 }
 
-const STATES = ["Aguascalientes", "Jalisco", "CDMX", "Nuevo León", "Veracruz"]
+const STATES = [
+  "Aguascalientes",
+  "Baja California",
+  "Baja California Sur",
+  "Campeche",
+  "Chiapas",
+  "Chihuahua",
+  "CDMX",
+  "Durango",
+  "Guanajuato",
+  "Guerrero",
+  "Hidalgo",
+  "Jalisco",
+  "México",
+  "Michoacán",
+  "Morelos",
+  "Nayarit",
+  "Nuevo León",
+  "Oaxaca",
+  "Puebla",
+  "Querétaro",
+  "Quintana Roo",
+  "San Luis Potosí",
+  "Sinaloa",
+  "Sonora",
+  "Tabasco",
+  "Tamaulipas",
+  "Tlaxcala",
+  "Veracruz",
+  "Yucatán",
+  "Zacatecas",
+]
+
 const MODALIDADES = ["Escolarizada", "No Escolarizada", "Mixta"]
-const GRADOS = ["Licenciatura", "Maestría", "Ingeniería"]
+const GRADOS = ["Licenciatura", "Ingeniería", "Maestría", "Doctorado"]
 
 export function CreateOpportunityModal({ open, onOpenChange, onCreateSuccess }: CreateOpportunityModalProps) {
   const [formData, setFormData] = useState({
-    estado: "",
-    universidad: "",
-    carrera: "",
-    modalidad: "",
-    grado: "",
-    url: "",
-    claveOficial: "",
+    Estado: "",
+    "Nombre del tecnológico": "",
+    Carrera: "",
+    Modalidad: "",
+    "Grado que otorga": "",
+    "Clave oficial": "",
+    "URL del tecnológico": "",
+    "URL de la carrera": "",
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onCreateSuccess(formData)
     setFormData({
-      estado: "",
-      universidad: "",
-      carrera: "",
-      modalidad: "",
-      grado: "",
-      url: "",
-      claveOficial: "",
+      Estado: "",
+      "Nombre del tecnológico": "",
+      Carrera: "",
+      Modalidad: "",
+      "Grado que otorga": "",
+      "Clave oficial": "",
+      "URL del tecnológico": "",
+      "URL de la carrera": "",
     })
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-card border border-border">
+      <DialogContent className="max-w-md bg-card border border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">Agregar Nueva Oportunidad</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label className="text-foreground">Estado</Label>
-            <Select value={formData.estado} onValueChange={(value) => setFormData({ ...formData, estado: value })}>
+            <Label className="text-foreground">
+              Estado <span className="text-destructive">*</span>
+            </Label>
+            <Select value={formData.Estado} onValueChange={(value) => setFormData({ ...formData, Estado: value })}>
               <SelectTrigger className="bg-background border-border">
                 <SelectValue placeholder="Seleccionar" />
               </SelectTrigger>
@@ -68,43 +104,51 @@ export function CreateOpportunityModal({ open, onOpenChange, onCreateSuccess }: 
           </div>
 
           <div>
-            <Label className="text-foreground">Universidad</Label>
+            <Label className="text-foreground">
+              Nombre del Tecnológico <span className="text-destructive">*</span>
+            </Label>
             <Input
-              placeholder="Nombre de la universidad"
-              value={formData.universidad}
-              onChange={(e) => setFormData({ ...formData, universidad: e.target.value })}
+              placeholder="Ej: Instituto Tecnológico de Aguascalientes"
+              value={formData["Nombre del tecnológico"]}
+              onChange={(e) => setFormData({ ...formData, "Nombre del tecnológico": e.target.value })}
               className="bg-background border-border"
               required
             />
           </div>
 
           <div>
-            <Label className="text-foreground">Clave Oficial</Label>
+            <Label className="text-foreground">
+              Clave Oficial <span className="text-destructive">*</span>
+            </Label>
             <Input
-              placeholder="Ej: ITA-001"
-              value={formData.claveOficial}
-              onChange={(e) => setFormData({ ...formData, claveOficial: e.target.value })}
+              placeholder="Ej: IIND-2010-227"
+              value={formData["Clave oficial"]}
+              onChange={(e) => setFormData({ ...formData, "Clave oficial": e.target.value })}
               className="bg-background border-border"
               required
             />
           </div>
 
           <div>
-            <Label className="text-foreground">Carrera</Label>
+            <Label className="text-foreground">
+              Carrera <span className="text-destructive">*</span>
+            </Label>
             <Input
-              placeholder="Nombre de la carrera"
-              value={formData.carrera}
-              onChange={(e) => setFormData({ ...formData, carrera: e.target.value })}
+              placeholder="Ej: Ingeniería Industrial"
+              value={formData.Carrera}
+              onChange={(e) => setFormData({ ...formData, Carrera: e.target.value })}
               className="bg-background border-border"
               required
             />
           </div>
 
           <div>
-            <Label className="text-foreground">Modalidad</Label>
+            <Label className="text-foreground">
+              Modalidad <span className="text-destructive">*</span>
+            </Label>
             <Select
-              value={formData.modalidad}
-              onValueChange={(value) => setFormData({ ...formData, modalidad: value })}
+              value={formData.Modalidad}
+              onValueChange={(value) => setFormData({ ...formData, Modalidad: value })}
             >
               <SelectTrigger className="bg-background border-border">
                 <SelectValue placeholder="Seleccionar" />
@@ -120,8 +164,13 @@ export function CreateOpportunityModal({ open, onOpenChange, onCreateSuccess }: 
           </div>
 
           <div>
-            <Label className="text-foreground">Grado</Label>
-            <Select value={formData.grado} onValueChange={(value) => setFormData({ ...formData, grado: value })}>
+            <Label className="text-foreground">
+              Grado que Otorga <span className="text-destructive">*</span>
+            </Label>
+            <Select
+              value={formData["Grado que otorga"]}
+              onValueChange={(value) => setFormData({ ...formData, "Grado que otorga": value })}
+            >
               <SelectTrigger className="bg-background border-border">
                 <SelectValue placeholder="Seleccionar" />
               </SelectTrigger>
@@ -136,12 +185,28 @@ export function CreateOpportunityModal({ open, onOpenChange, onCreateSuccess }: 
           </div>
 
           <div>
-            <Label className="text-foreground">URL Tecnológico</Label>
+            <Label className="text-foreground">
+              URL del Tecnológico <span className="text-destructive">*</span>
+            </Label>
             <Input
               type="url"
-              placeholder="https://example.com"
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              placeholder="https://aguascalientes.tecnm.mx"
+              value={formData["URL del tecnológico"]}
+              onChange={(e) => setFormData({ ...formData, "URL del tecnológico": e.target.value })}
+              className="bg-background border-border"
+              required
+            />
+          </div>
+
+          <div>
+            <Label className="text-foreground">
+              URL de la Carrera <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              type="url"
+              placeholder="https://aguascalientes.tecnm.mx/ingenieria-industrial"
+              value={formData["URL de la carrera"]}
+              onChange={(e) => setFormData({ ...formData, "URL de la carrera": e.target.value })}
               className="bg-background border-border"
               required
             />

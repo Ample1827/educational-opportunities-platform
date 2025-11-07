@@ -6,14 +6,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pencil, Trash2 } from "lucide-react"
 
 interface Opportunity {
-  id: number
-  estado: string
-  universidad: string
-  carrera: string
-  modalidad: string
-  grado: string
-  url: string
-  claveOficial: string
+  _id: string
+  Estado: string
+  "Nombre del tecnológico": string
+  Carrera: string
+  Modalidad: string
+  "Grado que otorga": string
+  "Clave oficial": string
+  "URL del tecnológico": string
+  "URL de la carrera": string
 }
 
 interface AdminTableProps {
@@ -37,8 +38,9 @@ export function AdminTable({ opportunities, onEdit, onDelete }: AdminTableProps)
         <Table>
           <TableHeader>
             <TableRow className="border-b border-border bg-muted/50">
+              <TableHead className="font-bold text-foreground">Clave Oficial</TableHead>
               <TableHead className="font-bold text-foreground">Estado</TableHead>
-              <TableHead className="font-bold text-foreground">Universidad</TableHead>
+              <TableHead className="font-bold text-foreground">Tecnológico</TableHead>
               <TableHead className="font-bold text-foreground">Carrera</TableHead>
               <TableHead className="font-bold text-foreground">Modalidad</TableHead>
               <TableHead className="font-bold text-foreground">Grado</TableHead>
@@ -47,16 +49,17 @@ export function AdminTable({ opportunities, onEdit, onDelete }: AdminTableProps)
           </TableHeader>
           <TableBody>
             {opportunities.map((opp) => (
-              <TableRow key={opp.id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                <TableCell className="text-foreground">{opp.estado}</TableCell>
-                <TableCell className="text-foreground text-sm">{opp.universidad}</TableCell>
-                <TableCell className="text-foreground">{opp.carrera}</TableCell>
+              <TableRow key={opp._id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                <TableCell className="text-foreground font-medium">{opp["Clave oficial"]}</TableCell>
+                <TableCell className="text-foreground">{opp.Estado}</TableCell>
+                <TableCell className="text-foreground text-sm">{opp["Nombre del tecnológico"]}</TableCell>
+                <TableCell className="text-foreground">{opp.Carrera}</TableCell>
                 <TableCell className="text-foreground">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                    {opp.modalidad}
+                    {opp.Modalidad}
                   </span>
                 </TableCell>
-                <TableCell className="text-foreground">{opp.grado}</TableCell>
+                <TableCell className="text-foreground text-sm">{opp["Grado que otorga"]}</TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button
                     size="sm"

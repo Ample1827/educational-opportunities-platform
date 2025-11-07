@@ -10,14 +10,15 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Opportunity {
-  id: number
-  estado: string
-  universidad: string
-  carrera: string
-  modalidad: string
-  grado: string
-  url: string
-  claveOficial: string
+  _id: string
+  Estado: string
+  "Nombre del tecnológico": string
+  Carrera: string
+  Modalidad: string
+  "Grado que otorga": string
+  "Clave oficial": string
+  "URL del tecnológico": string
+  "URL de la carrera": string
 }
 
 interface EditOpportunityModalProps {
@@ -27,12 +28,44 @@ interface EditOpportunityModalProps {
   onEditSuccess: (opportunity: Opportunity) => void
 }
 
-const STATES = ["Aguascalientes", "Jalisco", "CDMX", "Nuevo León", "Veracruz"]
+const STATES = [
+  "Aguascalientes",
+  "Baja California",
+  "Baja California Sur",
+  "Campeche",
+  "Chiapas",
+  "Chihuahua",
+  "CDMX",
+  "Durango",
+  "Guanajuato",
+  "Guerrero",
+  "Hidalgo",
+  "Jalisco",
+  "México",
+  "Michoacán",
+  "Morelos",
+  "Nayarit",
+  "Nuevo León",
+  "Oaxaca",
+  "Puebla",
+  "Querétaro",
+  "Quintana Roo",
+  "San Luis Potosí",
+  "Sinaloa",
+  "Sonora",
+  "Tabasco",
+  "Tamaulipas",
+  "Tlaxcala",
+  "Veracruz",
+  "Yucatán",
+  "Zacatecas",
+]
+
 const MODALIDADES = ["Escolarizada", "No Escolarizada", "Mixta"]
-const GRADOS = ["Licenciatura", "Maestría", "Ingeniería"]
+const GRADOS = ["Licenciatura", "Ingeniería", "Maestría", "Doctorado"]
 
 export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSuccess }: EditOpportunityModalProps) {
-  const [formData, setFormData] = useState(opportunity)
+  const [formData, setFormData] = useState<Opportunity>(opportunity)
 
   useEffect(() => {
     setFormData(opportunity)
@@ -45,14 +78,14 @@ export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSu
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-card border border-border">
+      <DialogContent className="max-w-md bg-card border border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">Editar Oportunidad</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label className="text-foreground">Estado</Label>
-            <Select value={formData.estado} onValueChange={(value) => setFormData({ ...formData, estado: value })}>
+            <Select value={formData.Estado} onValueChange={(value) => setFormData({ ...formData, Estado: value })}>
               <SelectTrigger className="bg-background border-border">
                 <SelectValue />
               </SelectTrigger>
@@ -67,10 +100,10 @@ export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSu
           </div>
 
           <div>
-            <Label className="text-foreground">Universidad</Label>
+            <Label className="text-foreground">Nombre del Tecnológico</Label>
             <Input
-              value={formData.universidad}
-              onChange={(e) => setFormData({ ...formData, universidad: e.target.value })}
+              value={formData["Nombre del tecnológico"]}
+              onChange={(e) => setFormData({ ...formData, "Nombre del tecnológico": e.target.value })}
               className="bg-background border-border"
               required
             />
@@ -79,8 +112,8 @@ export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSu
           <div>
             <Label className="text-foreground">Clave Oficial</Label>
             <Input
-              value={formData.claveOficial}
-              onChange={(e) => setFormData({ ...formData, claveOficial: e.target.value })}
+              value={formData["Clave oficial"]}
+              onChange={(e) => setFormData({ ...formData, "Clave oficial": e.target.value })}
               className="bg-background border-border"
               required
             />
@@ -89,8 +122,8 @@ export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSu
           <div>
             <Label className="text-foreground">Carrera</Label>
             <Input
-              value={formData.carrera}
-              onChange={(e) => setFormData({ ...formData, carrera: e.target.value })}
+              value={formData.Carrera}
+              onChange={(e) => setFormData({ ...formData, Carrera: e.target.value })}
               className="bg-background border-border"
               required
             />
@@ -99,8 +132,8 @@ export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSu
           <div>
             <Label className="text-foreground">Modalidad</Label>
             <Select
-              value={formData.modalidad}
-              onValueChange={(value) => setFormData({ ...formData, modalidad: value })}
+              value={formData.Modalidad}
+              onValueChange={(value) => setFormData({ ...formData, Modalidad: value })}
             >
               <SelectTrigger className="bg-background border-border">
                 <SelectValue />
@@ -116,8 +149,11 @@ export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSu
           </div>
 
           <div>
-            <Label className="text-foreground">Grado</Label>
-            <Select value={formData.grado} onValueChange={(value) => setFormData({ ...formData, grado: value })}>
+            <Label className="text-foreground">Grado que Otorga</Label>
+            <Select
+              value={formData["Grado que otorga"]}
+              onValueChange={(value) => setFormData({ ...formData, "Grado que otorga": value })}
+            >
               <SelectTrigger className="bg-background border-border">
                 <SelectValue />
               </SelectTrigger>
@@ -132,11 +168,22 @@ export function EditOpportunityModal({ open, onOpenChange, opportunity, onEditSu
           </div>
 
           <div>
-            <Label className="text-foreground">URL Tecnológico</Label>
+            <Label className="text-foreground">URL del Tecnológico</Label>
             <Input
               type="url"
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              value={formData["URL del tecnológico"]}
+              onChange={(e) => setFormData({ ...formData, "URL del tecnológico": e.target.value })}
+              className="bg-background border-border"
+              required
+            />
+          </div>
+
+          <div>
+            <Label className="text-foreground">URL de la Carrera</Label>
+            <Input
+              type="url"
+              value={formData["URL de la carrera"]}
+              onChange={(e) => setFormData({ ...formData, "URL de la carrera": e.target.value })}
               className="bg-background border-border"
               required
             />
