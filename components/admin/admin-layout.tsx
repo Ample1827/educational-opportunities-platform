@@ -10,10 +10,17 @@ import { LayoutDashboard, Settings, LogOut, Menu, X } from "lucide-react"
 interface AdminLayoutProps {
   children: React.ReactNode
   onLogout: () => void
+  activeTab?: "dashboard" | "opportunities"
+  onTabChange?: (tab: "dashboard" | "opportunities") => void
 }
 
-export function AdminLayout({ children, onLogout }: AdminLayoutProps) {
+export function AdminLayout({ children, onLogout, activeTab = "dashboard", onTabChange }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const handleTabChange = (tab: "dashboard" | "opportunities") => {
+    onTabChange?.(tab)
+    setSidebarOpen(false)
+  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -36,16 +43,24 @@ export function AdminLayout({ children, onLogout }: AdminLayoutProps) {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2">
-            <Link href="/admin">
-              <Button variant="ghost" className="w-full justify-start text-foreground hover:bg-muted gap-3">
-                <LayoutDashboard className="w-5 h-5" />
-                Dashboard
-              </Button>
-            </Link>
-            <Button variant="ghost" className="w-full justify-start text-foreground hover:bg-muted gap-3 bg-muted/50">
+            <button
+              onClick={() => handleTabChange("dashboard")}
+              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-foreground hover:bg-muted transition-colors ${
+                activeTab === "dashboard" ? "bg-muted/50" : ""
+              }`}
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => handleTabChange("opportunities")}
+              className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-foreground hover:bg-muted transition-colors ${
+                activeTab === "opportunities" ? "bg-muted/50" : ""
+              }`}
+            >
               <Settings className="w-5 h-5" />
               Gestionar Oportunidades
-            </Button>
+            </button>
           </nav>
 
           {/* Logout */}

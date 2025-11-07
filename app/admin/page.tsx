@@ -55,6 +55,7 @@ export default function AdminPage() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null)
+  const [activeTab, setActiveTab] = useState<"dashboard" | "opportunities">("dashboard")
 
   useEffect(() => {
     // Check authorization
@@ -104,49 +105,56 @@ export default function AdminPage() {
   }
 
   return (
-    <AdminLayout onLogout={handleLogout}>
-      <div className="space-y-6">
-        {/* Stats section */}
-        <AdminStats opportunities={opportunities} />
-
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <AdminLayout onLogout={handleLogout} activeTab={activeTab} onTabChange={setActiveTab}>
+      {activeTab === "dashboard" ? (
+        <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Gestionar Oportunidades</h1>
-            <p className="text-muted-foreground mt-2">Total: {opportunities.length} oportunidades</p>
+            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-2">Resumen de oportunidades educativas</p>
           </div>
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4" />
-            Agregar Nueva Oportunidad
-          </Button>
+          <AdminStats opportunities={opportunities} />
         </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Gestionar Oportunidades</h1>
+              <p className="text-muted-foreground mt-2">Total: {opportunities.length} oportunidades</p>
+            </div>
+            <Button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              Agregar Nueva Oportunidad
+            </Button>
+          </div>
 
-        {/* Search bar */}
-        <div>
-          <Input
-            placeholder="Buscar por carrera, universidad o estado..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-card border-border"
+          {/* Search bar */}
+          <div>
+            <Input
+              placeholder="Buscar por carrera, universidad o estado..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="bg-card border-border"
+            />
+          </div>
+
+          {/* Table */}
+          <AdminTable
+            opportunities={filteredOpportunities}
+            onEdit={(opp) => {
+              setSelectedOpportunity(opp)
+              setShowEditModal(true)
+            }}
+            onDelete={(opp) => {
+              setSelectedOpportunity(opp)
+              setShowDeleteModal(true)
+            }}
           />
         </div>
-
-        {/* Table */}
-        <AdminTable
-          opportunities={filteredOpportunities}
-          onEdit={(opp) => {
-            setSelectedOpportunity(opp)
-            setShowEditModal(true)
-          }}
-          onDelete={(opp) => {
-            setSelectedOpportunity(opp)
-            setShowDeleteModal(true)
-          }}
-        />
-      </div>
+      )}
 
       {/* Modals */}
       <CreateOpportunityModal open={showCreateModal} onOpenChange={setShowCreateModal} onCreateSuccess={handleCreate} />
