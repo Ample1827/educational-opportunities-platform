@@ -1,126 +1,86 @@
 "use client"
 
-import { useMemo } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ChevronLeft, ExternalLink } from "lucide-react"
+import { ChevronLeft, ExternalLink, GraduationCap, MapPin, BookOpen, Globe } from "lucide-react"
 
 interface Opportunity {
-  id: number
-  estado: string
-  universidad: string
-  carrera: string
-  modalidad: string
-  grado: string
-  url: string
-  claveOficial: string
-}
-
-// Mock data - same as in search page
-const MOCK_OPPORTUNITIES: Opportunity[] = [
-  {
-    id: 1,
-    estado: "Aguascalientes",
-    universidad: "Instituto Tecnológico de Aguascalientes",
-    carrera: "Ingeniería Electrónica",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-    claveOficial: "ITA-001",
-  },
-  {
-    id: 2,
-    estado: "Jalisco",
-    universidad: "Instituto Tecnológico de Guadalajara",
-    carrera: "Ingeniería en Sistemas Computacionales",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-    claveOficial: "ITG-002",
-  },
-  {
-    id: 3,
-    estado: "CDMX",
-    universidad: "Instituto Tecnológico de México",
-    carrera: "Ingeniería Industrial",
-    modalidad: "Mixta",
-    grado: "Maestría",
-    url: "https://example.com",
-    claveOficial: "ITM-003",
-  },
-  {
-    id: 4,
-    estado: "Nuevo León",
-    universidad: "Instituto Tecnológico de Monterrey",
-    carrera: "Ingeniería Mecánica",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-    claveOficial: "ITN-004",
-  },
-  {
-    id: 5,
-    estado: "Veracruz",
-    universidad: "Instituto Tecnológico de Veracruz",
-    carrera: "Ingeniería Química",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-    claveOficial: "ITV-005",
-  },
-  {
-    id: 6,
-    estado: "Aguascalientes",
-    universidad: "Instituto Tecnológico de Aguascalientes",
-    carrera: "Administración de Empresas",
-    modalidad: "No Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-    claveOficial: "ITA-006",
-  },
-  {
-    id: 7,
-    estado: "Jalisco",
-    universidad: "Instituto Tecnológico de Guadalajara",
-    carrera: "Ingeniería Civil",
-    modalidad: "Escolarizada",
-    grado: "Licenciatura",
-    url: "https://example.com",
-    claveOficial: "ITG-007",
-  },
-  {
-    id: 8,
-    estado: "CDMX",
-    universidad: "Instituto Tecnológico de México",
-    carrera: "Ingeniería en Telemática",
-    modalidad: "Escolarizada",
-    grado: "Maestría",
-    url: "https://example.com",
-    claveOficial: "ITM-008",
-  },
-]
-
-const DETAIL_INFO = {
-  descripcion:
-    "Forma profesionales capaces de diseñar, desarrollar, implementar y mantener sistemas electrónicos. El programa incluye asignaturas teóricas y prácticas en circuitos, automatización y electrónica de potencia.",
-  duracion: "4 años",
-  creditos: "240",
-  horario: "Matutino y Vespertino",
-  requisitos: "Bachillerato o equivalente, Promedio mínimo de 6.0",
+  _id: string
+  Estado: string
+  "Nombre del tecnológico": string
+  "Clave oficial": string
+  Modalidad: string
+  "Grado que otorga": string
+  Carrera: string
+  "URL del tecnológico": string
+  "URL de la carrera": string
 }
 
 export default function OpportunityDetailPage() {
   const params = useParams()
-  const router = useRouter()
-  const id = Number(params?.id)
+  const id = params?.id as string
+  
+  const [opportunity, setOpportunity] = useState<Opportunity | null>(null)
+  const [relatedOpportunities, setRelatedOpportunities] = useState<Opportunity[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const opportunity = useMemo(() => {
-    return MOCK_OPPORTUNITIES.find((o) => o.id === id)
+  useEffect(() => {
+    const fetchOpportunity = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/opportunities/${id}`)
+        const data = await response.json()
+        
+        if (data.success) {
+          setOpportunity(data.data)
+          
+          const relatedResponse = await fetch(
+            `/api/opportunities?universidad=${encodeURIComponent(data.data["Nombre del tecnológico"])}`
+          )
+          const relatedData = await relatedResponse.json()
+          
+          if (relatedData.success) {
+            const filtered = relatedData.data
+              .filter((opp: Opportunity) => opp._id !== id)
+              .slice(0, 4)
+            setRelatedOpportunities(filtered)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching opportunity:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      fetchOpportunity()
+    }
   }, [id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="animate-pulse">
+            <div className="h-8 bg-muted rounded w-1/4 mb-8"></div>
+            <Card className="border border-border bg-card p-8 sm:p-12">
+              <div className="h-6 bg-muted rounded w-3/4 mb-4"></div>
+              <div className="h-8 bg-muted rounded w-full mb-4"></div>
+              <div className="h-6 bg-muted rounded w-2/3"></div>
+            </Card>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   if (!opportunity) {
     return (
@@ -130,7 +90,9 @@ export default function OpportunityDetailPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Oportunidad no encontrada</h1>
             <Link href="/search">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Volver a búsqueda</Button>
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                Volver a búsqueda
+              </Button>
             </Link>
           </div>
         </main>
@@ -143,7 +105,6 @@ export default function OpportunityDetailPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Back button */}
         <Link href="/search">
           <Button variant="ghost" className="mb-8 text-foreground hover:bg-muted flex items-center gap-2">
             <ChevronLeft className="w-4 h-4" />
@@ -151,64 +112,67 @@ export default function OpportunityDetailPage() {
           </Button>
         </Link>
 
-        {/* Main card */}
         <Card className="border border-border bg-card p-8 sm:p-12 mb-8">
-          {/* Header section */}
           <div className="mb-8 pb-8 border-b border-border">
-            <p className="text-sm text-muted-foreground font-medium mb-2">
-              {opportunity.estado} • {opportunity.modalidad}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium mb-3">
+              <MapPin className="w-4 h-4" />
+              <span>{opportunity.Estado}</span>
+              <span className="text-muted-foreground/50">•</span>
+              <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-semibold">
+                {opportunity.Modalidad}
+              </span>
+            </div>
+            <h1 className="text-4xl font-bold text-foreground mb-3 text-balance">{opportunity.Carrera}</h1>
+            <p className="text-xl text-muted-foreground flex items-center gap-2">
+              <GraduationCap className="w-5 h-5" />
+              {opportunity["Nombre del tecnológico"]}
             </p>
-            <h1 className="text-4xl font-bold text-foreground mb-2 text-balance">{opportunity.carrera}</h1>
-            <p className="text-xl text-muted-foreground">{opportunity.universidad}</p>
           </div>
 
-          {/* Key info grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 pb-8 border-b border-border">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Grado que otorga</p>
-              <p className="text-lg font-semibold text-foreground">{opportunity.grado}</p>
+            <div className="bg-muted/50 rounded-lg p-4">
+              <p className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                Grado que otorga
+              </p>
+              <p className="text-lg font-semibold text-foreground">{opportunity["Grado que otorga"]}</p>
             </div>
-            <div>
+            <div className="bg-muted/50 rounded-lg p-4">
               <p className="text-sm font-medium text-muted-foreground mb-2">Clave Oficial</p>
-              <p className="text-lg font-semibold text-foreground">{opportunity.claveOficial}</p>
+              <p className="text-lg font-semibold text-foreground font-mono">{opportunity["Clave oficial"]}</p>
             </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Duración</p>
-              <p className="text-lg font-semibold text-foreground">{DETAIL_INFO.duracion}</p>
+            <div className="bg-muted/50 rounded-lg p-4">
+              <p className="text-sm font-medium text-muted-foreground mb-2">Modalidad</p>
+              <p className="text-lg font-semibold text-foreground">{opportunity.Modalidad}</p>
             </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Créditos</p>
-              <p className="text-lg font-semibold text-foreground">{DETAIL_INFO.creditos}</p>
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground mb-4">Descripción del programa</h2>
-            <p className="text-muted-foreground leading-relaxed text-lg">{DETAIL_INFO.descripcion}</p>
-          </div>
-
-          {/* Additional info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 pb-8 border-b border-border">
-            <div>
-              <h3 className="font-bold text-foreground mb-2">Horarios disponibles</h3>
-              <p className="text-muted-foreground">{DETAIL_INFO.horario}</p>
-            </div>
-            <div>
-              <h3 className="font-bold text-foreground mb-2">Requisitos de admisión</h3>
-              <p className="text-muted-foreground">{DETAIL_INFO.requisitos}</p>
+            <div className="bg-muted/50 rounded-lg p-4">
+              <p className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Estado
+              </p>
+              <p className="text-lg font-semibold text-foreground">{opportunity.Estado}</p>
             </div>
           </div>
 
-          {/* Call to action buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <a href={opportunity.url} target="_blank" rel="noopener noreferrer" className="flex-1">
-              <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground flex items-center justify-center gap-2">
-                <ExternalLink className="w-4 h-4" />
-                Visitar sitio del tecnológico
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <a 
+              href={opportunity["URL del tecnológico"]} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <Button 
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 border-2"
+              >
+                <Globe className="w-5 h-5" />
+                Web
               </Button>
             </a>
-            <a href={opportunity.url} target="_blank" rel="noopener noreferrer" className="flex-1">
+            <a 
+              href={opportunity["URL de la carrera"]} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
               <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-2">
                 <ExternalLink className="w-4 h-4" />
                 Ver carrera en el sitio
@@ -217,30 +181,31 @@ export default function OpportunityDetailPage() {
           </div>
         </Card>
 
-        {/* Related opportunities section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Más oportunidades en {opportunity.estado}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {MOCK_OPPORTUNITIES.filter((o) => o.estado === opportunity.estado && o.id !== opportunity.id)
-              .slice(0, 2)
-              .map((opp) => (
-                <Link key={opp.id} href={`/opportunity/${opp.id}`}>
+        {relatedOpportunities.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              Más programas en {opportunity["Nombre del tecnológico"]}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {relatedOpportunities.map((opp) => (
+                <Link key={opp._id} href={`/opportunity/${opp._id}`}>
                   <Card className="border border-border bg-card p-6 hover:shadow-lg transition-shadow cursor-pointer h-full">
-                    <p className="text-xs font-medium text-muted-foreground mb-2">{opp.universidad}</p>
-                    <h3 className="font-bold text-foreground mb-3 line-clamp-2">{opp.carrera}</h3>
-                    <div className="flex gap-2 flex-wrap">
-                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary">
-                        {opp.modalidad}
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold bg-primary/10 text-primary">
+                        {opp.Modalidad}
                       </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-secondary/10 text-secondary">
-                        {opp.grado}
+                      <span className="inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold bg-secondary/10 text-secondary">
+                        {opp["Grado que otorga"]}
                       </span>
                     </div>
+                    <h3 className="font-bold text-foreground mb-2 line-clamp-2 text-lg">{opp.Carrera}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-1 font-mono">{opp["Clave oficial"]}</p>
                   </Card>
                 </Link>
               ))}
+            </div>
           </div>
-        </div>
+        )}
       </main>
       <Footer />
     </div>

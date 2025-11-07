@@ -1,98 +1,164 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useEffect } from "react"
+import { Search } from "lucide-react"
 import Link from "next/link"
-
-const UNIVERSITIES = [
-  "Instituto Tecnológico de Aguascalientes",
-  "Instituto Tecnológico de Apizaco",
-  "Instituto Tecnológico de Celaya",
-  "Instituto Tecnológico de Chihuahua",
-  "Instituto Tecnológico de Ciudad Madero",
-]
-
-const STATES = ["Aguascalientes", "Baja California", "CDMX", "Jalisco", "Nuevo León", "Veracruz"]
 
 export function SearchPreview() {
   const [searchTab, setSearchTab] = useState<"university" | "state">("university")
+  const [universities, setUniversities] = useState<string[]>([])
+  const [states, setStates] = useState<string[]>([])
   const [selectedUniversity, setSelectedUniversity] = useState("")
   const [selectedState, setSelectedState] = useState("")
+  const [loading, setLoading] = useState(true)
+
+  // Fetch universities and states from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const [universitiesRes, statesRes] = await Promise.all([
+          fetch('/api/filters?type=universidades'),
+          fetch('/api/filters?type=estados')
+        ])
+        
+        const universitiesData = await universitiesRes.json()
+        const statesData = await statesRes.json()
+        
+        if (universitiesData.success) {
+          setUniversities(universitiesData.data)
+        }
+        if (statesData.success) {
+          setStates(statesData.data)
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const handleSearch = () => {
+    if (searchTab === "university" && selectedUniversity) {
+      window.location.href = `/search?universidad=${encodeURIComponent(selectedUniversity)}`
+    } else if (searchTab === "state" && selectedState) {
+      window.location.href = `/search?estado=${encodeURIComponent(selectedState)}`
+    }
+  }
 
   return (
-    <section className="py-16 sm:py-24 bg-card border-y border-border">
+    <section className="py-16 sm:py-24 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-center mb-4 text-foreground">Busca programas por:</h2>
-          <div className="flex gap-4 justify-center">
-            <Button
-              variant={searchTab === "university" ? "default" : "outline"}
-              onClick={() => setSearchTab("university")}
-              className={searchTab === "university" ? "bg-primary text-primary-foreground" : ""}
-            >
-              Universidad
-            </Button>
-            <Button
-              variant={searchTab === "state" ? "default" : "outline"}
-              onClick={() => setSearchTab("state")}
-              className={searchTab === "state" ? "bg-primary text-primary-foreground" : ""}
-            >
-              Estado
-            </Button>
-          </div>
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Encuentra tu programa ideal
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Busca por universidad o por estado para descubrir los programas disponibles
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto">
-          {searchTab === "university" && (
-            <div className="space-y-4">
-              <Select value={selectedUniversity} onValueChange={setSelectedUniversity}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona una universidad" />
-                </SelectTrigger>
-                <SelectContent>
-                  {UNIVERSITIES.map((uni) => (
-                    <SelectItem key={uni} value={uni}>
-                      {uni}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Link href={selectedUniversity ? `/search?university=${encodeURIComponent(selectedUniversity)}` : "#"}>
-                <Button
-                  disabled={!selectedUniversity}
-                  className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-                >
-                  Buscar programas
-                </Button>
-              </Link>
+        {/* Search Box */}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8">
+            {/* Tab Buttons */}
+            <div className="flex gap-3 mb-6 bg-gray-100 p-1.5 rounded-xl">
+              <button
+                onClick={() => setSearchTab("university")}
+                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                  searchTab === "university"
+                    ? "bg-white text-gray-900 shadow-md"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Por Universidad
+              </button>
+              <button
+                onClick={() => setSearchTab("state")}
+                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                  searchTab === "state"
+                    ? "bg-white text-gray-900 shadow-md"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Por Estado
+              </button>
             </div>
-          )}
 
-          {searchTab === "state" && (
+            {/* Search Content */}
             <div className="space-y-4">
-              <Select value={selectedState} onValueChange={setSelectedState}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATES.map((state) => (
-                    <SelectItem key={state} value={state}>
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Link href={selectedState ? `/search?state=${encodeURIComponent(selectedState)}` : "#"}>
-                <Button
-                  disabled={!selectedState}
-                  className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-                >
-                  Buscar programas
-                </Button>
-              </Link>
+              {searchTab === "university" ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Selecciona una universidad
+                    </label>
+                    <select
+                      value={selectedUniversity}
+                      onChange={(e) => setSelectedUniversity(e.target.value)}
+                      disabled={loading}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {loading ? "Cargando..." : "Selecciona una universidad"}
+                      </option>
+                      {universities.map((uni) => (
+                        <option key={uni} value={uni}>
+                          {uni}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    onClick={handleSearch}
+                    disabled={!selectedUniversity || loading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  >
+                    <Search className="w-5 h-5" />
+                    Buscar programas
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Selecciona un estado
+                    </label>
+                    <select
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      disabled={loading}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {loading ? "Cargando..." : "Selecciona un estado"}
+                      </option>
+                      {states.map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    onClick={handleSearch}
+                    disabled={!selectedState || loading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  >
+                    <Search className="w-5 h-5" />
+                    Buscar programas
+                  </button>
+                </>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Quick Stats */}
+          
         </div>
       </div>
     </section>
