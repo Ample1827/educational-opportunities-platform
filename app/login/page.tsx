@@ -1,30 +1,47 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
+import { AlertCircle } from "lucide-react"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("Adalromero99@gmail.com")
-  const [password, setPassword] = useState("admin123")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
 
-    // Simulate login - in production, this would call an API
-    setTimeout(() => {
-      // Store a simple token in localStorage for demo purposes
-      localStorage.setItem("adminToken", "demo-token")
-      router.push("/admin")
-    }, 500)
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError("Credenciales inválidas. Por favor verifica tu correo y contraseña.")
+      } else if (result?.ok) {
+        // Store token for admin check
+        localStorage.setItem("adminToken", "authenticated")
+        router.push("/admin")
+        router.refresh()
+      }
+    } catch (error) {
+      setError("Error al iniciar sesión. Inténtalo de nuevo.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -42,6 +59,13 @@ export default function LoginPage() {
         <h2 className="text-2xl font-bold mb-2 text-foreground text-center">Iniciar sesión</h2>
         <p className="text-sm text-muted-foreground text-center mb-8">Solo para administradores</p>
 
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-500">{error}</p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
@@ -52,9 +76,10 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@example.com"
+              placeholder="admin@ample.lol"
               required
               className="bg-background border-border"
+              disabled={isLoading}
             />
           </div>
 
@@ -70,6 +95,7 @@ export default function LoginPage() {
               placeholder="••••••••"
               required
               className="bg-background border-border"
+              disabled={isLoading}
             />
           </div>
 
