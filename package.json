@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@auth/core": "latest",
     "@aws-sdk/credential-providers": "latest",
     "@hookform/resolvers": "^3.10.0",
     "@mongodb-js/zstd": "latest",
@@ -53,8 +54,9 @@
     "mongodb": "latest",
     "mongodb-client-encryption": "latest",
     "next": "16.0.0",
-    "next-auth": "^4.24.13",
+    "next-auth": "latest",
     "next-themes": "latest",
+    "nodemailer": "latest",
     "react": "19.2.0",
     "react-day-picker": "9.8.0",
     "react-dom": "19.2.0",

@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Ample - Descubre tu futuro en el TecNM",
   description: "Plataforma de búsqueda de oportunidades educativas en universidades tecnológicas mexicanas",
   generator: "v0.app",
+  icons: {
+    icon: "/AmpleTecNM.png",
+  },
 }
 
 export default function RootLayout({
@@ -22,9 +25,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`font-sans antialiased`}>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
         <Analytics />
       </body>
     </html>
