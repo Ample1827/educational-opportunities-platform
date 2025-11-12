@@ -1,83 +1,82 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color palette to custom blue/gray scheme */
-  --background: #f4f4f4;
-  --foreground: #0c2b4e;
-  --card: #ffffff;
-  --card-foreground: #0c2b4e;
-  --popover: #ffffff;
-  --popover-foreground: #0c2b4e;
-  --primary: #1a3d64;
-  --primary-foreground: #f4f4f4;
-  --secondary: #1d546c;
-  --secondary-foreground: #f4f4f4;
-  --muted: #e8e8e8;
-  --muted-foreground: #666666;
-  --accent: #0c2b4e;
-  --accent-foreground: #f4f4f4;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: #e0e0e0;
-  --input: #f8f8f8;
-  --ring: #1a3d64;
-  --chart-1: #1a3d64;
-  --chart-2: #1d546c;
-  --chart-3: #0c2b4e;
-  --chart-4: #26517a;
-  --chart-5: #1a3d64;
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0c2b4e;
-  --sidebar-primary: #1a3d64;
-  --sidebar-primary-foreground: #f4f4f4;
-  --sidebar-accent: #1d546c;
-  --sidebar-accent-foreground: #f4f4f4;
-  --sidebar-border: #e0e0e0;
-  --sidebar-ring: #1a3d64;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background: #0c2b4e;
-  --foreground: #f4f4f4;
-  --card: #1a3d64;
-  --card-foreground: #f4f4f4;
-  --popover: #1a3d64;
-  --popover-foreground: #f4f4f4;
-  --primary: #4a7ba7;
-  --primary-foreground: #0c2b4e;
-  --secondary: #5a8fbf;
-  --secondary-foreground: #0c2b4e;
-  --muted: #2a4a6e;
-  --muted-foreground: #b0b0b0;
-  --accent: #f4f4f4;
-  --accent-foreground: #0c2b4e;
-  --destructive: oklch(0.596 0.282 27.344);
-  --destructive-foreground: oklch(0.97 0.01 0);
-  --border: #2a4a6e;
-  --input: #0f334a;
-  --ring: #4a7ba7;
-  --chart-1: #4a7ba7;
-  --chart-2: #5a8fbf;
-  --chart-3: #f4f4f4;
-  --chart-4: #6ba3d3;
-  --chart-5: #4a7ba7;
-  --sidebar: #1a3d64;
-  --sidebar-foreground: #f4f4f4;
-  --sidebar-primary: #4a7ba7;
-  --sidebar-primary-foreground: #0c2b4e;
-  --sidebar-accent: #5a8fbf;
-  --sidebar-accent-foreground: #0c2b4e;
-  --sidebar-border: #2a4a6e;
-  --sidebar-ring: #4a7ba7;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback";
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -120,227 +119,7 @@
   * {
     @apply border-border outline-ring/50;
   }
-  
-  /* Scroll suave */
-  html {
-    @apply scroll-smooth;
-  }
-
   body {
     @apply bg-background text-foreground;
-    /* Animación de fundido al cargar la página */
-    animation: page-fade-in 0.5s ease-out;
-  }
-}
-
-@layer components {
-  .gradient-blur {
-    @apply blur-3xl;
-  }
-  .fade-in {
-    @apply animate-in fade-in duration-700;
-  }
-
-  /* --- ANIMACIONES BASE --- */
-  @keyframes slide-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
-  @keyframes glow-pulse {
-    0%,
-    100% {
-      opacity: 0.4;
-    }
-    50% {
-      opacity: 0.8;
-    }
-  }
-
-  @keyframes scale-in {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  .animate-slide-up {
-    animation: slide-up 0.6s ease-out;
-  }
-
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-
-  .animate-glow-pulse {
-    animation: glow-pulse 2s ease-in-out infinite;
-  }
-
-  .animate-scale-in {
-    animation: scale-in 0.5s ease-out;
-  }
-
-  .delay-100 {
-    animation-delay: 0.1s;
-  }
-
-  .delay-200 {
-    animation-delay: 0.2s;
-  }
-
-  .delay-300 {
-    animation-delay: 0.3s;
-  }
-
-  .delay-400 {
-    animation-delay: 0.4s;
-  }
-
-  /* --- ANIMACIÓN DE CARGA DE PÁGINA --- */
-  @keyframes page-fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  /* --- INTERACCIONES DE HOVER --- */
-
-  /* Para links de navegación (subrayado animado) */
-  .nav-link-hover {
-    @apply relative py-1;
-  }
-  /* CORREGIDO: Sintaxis de 'content' */
-  .nav-link-hover::after {
-    content: ''; 
-    @apply absolute bottom-0 left-0 h-[2px] w-full scale-x-0;
-    @apply bg-primary transition-transform duration-300 ease-out origin-bottom-right;
-  }
-  .nav-link-hover:hover::after {
-    @apply scale-x-100 origin-bottom-left;
-  }
-
-  /* Para botones (efecto "push" al hacer clic) */
-  .btn-push {
-    @apply transition-transform duration-100 ease-out;
-  }
-  .btn-push:hover {
-    @apply scale-[1.02];
-  }
-  .btn-push:active {
-    @apply scale-[0.98];
-  }
-
-  /* Para tarjetas (efecto "lift" al hacer hover) */
-  .card-lift {
-    /* CORREGIDO: Transición más rápida (200ms) */
-    @apply transition-all duration-200 ease-out;
-  }
-  .card-lift:hover {
-    @apply scale-[1.03] shadow-lg dark:shadow-black/30;
-  }
-
-  /* --- TEXTO DE GRADIENTE ANIMADO (INTENSO) --- */
-  @keyframes animate-gradient-text {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-  .animated-gradient-text {
-    @apply bg-clip-text text-transparent;
-    /* CORREGIDO: Gradiente intenso y animación más rápida */
-    background-size: 200% 200%;
-    background-image: linear-gradient(
-      -45deg,
-      #c3cee6, /* Plateado-azulado */
-      #253d7e, /* Azul oscuro */
-      #8591b0, /* Azul-gris */
-      #c3cee6  /* Plateado-azulado */
-    );
-    animation: animate-gradient-text 4s ease-in-out infinite;
-  }
-
-  /* --- BORDE DE GRADIENTE DESLIZANTE (NO GIRA) --- */
-  @keyframes animate-gradient-slide {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  .animated-border-wrapper {
-    @apply relative p-[2px]; /* El 'padding' es el grosor del borde */
-    @apply rounded-xl; /* Asegura que el contenedor tenga bordes redondeados */
-    overflow: hidden;
-
-    /* El fondo es el gradiente animado */
-    background-size: 300% 300%;
-    background-image: linear-gradient(
-      -45deg,
-      theme(colors.primary),
-      #c3cee6,
-      theme(colors.secondary),
-      theme(colors.primary)
-    );
-    animation: animate-gradient-slide 6s ease-in-out infinite;
-  }
-
-  .animated-border-inner {
-    /* El color de la tarjeta (card) oculta el fondo, excepto en los bordes */
-    @apply bg-card text-card-foreground;
-    @apply rounded-[0.5625rem]; /* Un poco menos que el wrapper (0.625rem - 2px) */
-    @apply w-full h-full;
-  }
-
-  /* --- EFECTO KEN BURNS PARA IMAGEN HERO --- */
-  @keyframes ken-burns {
-    0% {
-      transform: scale(1) translate(0, 0);
-      opacity: 0.9;
-    }
-    50% {
-      transform: scale(1.1) translate(-2%, 2%);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1) translate(0, 0);
-      opacity: 0.9;
-    }
-  }
-  .animate-ken-burns {
-    animation: ken-burns 20s ease-in-out infinite;
   }
 }
