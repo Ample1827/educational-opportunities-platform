@@ -1,75 +1,76 @@
 "use client"
 
-import Link from "next/link"
+// import Link from "next/link" // Eliminado para solucionar error de compilación
 import { ArrowRight, Sparkles } from "lucide-react"
 
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden min-h-screen flex items-center bg-gray-900">
-      {/* Static Background Image */}
+      {/* Fondo y Overlays */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="/hero-university-1.jpg" 
-          alt="Universidad background" 
+        <img
+          src="/hero-university-1.webp"
+          alt="Universidad background"
           className="w-full h-full object-cover"
           onError={(e) => {
             console.error("Image failed to load from /hero-university-1.jpg");
             e.currentTarget.style.display = 'none';
           }}
         />
-        
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/50"></div>
-
-        {/* Colored gradient overlay for brand colors */}
+        {/* Overlay oscuro para legibilidad (el que ajustamos) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/70 to-black/80"></div>
+        {/* Overlay de color de marca */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0C2B4E]/20 via-transparent to-[#1D546C]/20"></div>
       </div>
 
+      {/* Contenido Principal */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 w-full relative z-10">
         <div className="flex flex-col items-center text-center space-y-8">
-          {/* Badge with animation */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+          
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 animate-slide-up">
             <Sparkles className="w-4 h-4 text-white" />
             <span className="text-sm font-medium text-white">Encuentra tu camino educativo</span>
           </div>
 
-          {/* Main heading */}
-          <h1 className="text-5xl sm:text-7xl font-bold tracking-tight leading-tight text-white drop-shadow-2xl">
+          {/* Título Principal */}
+          <h1 className="text-5xl sm:text-7xl font-bold tracking-tight leading-tight text-white drop-shadow-2xl animate-slide-up delay-100">
             Descubre tu{" "}
-            <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+            {/* Texto con gradiente animado */}
+            <span className="animated-gradient-text bg-clip-text text-transparent drop-shadow-md">
               universidad ideal
             </span>
           </h1>
 
-          {/* Subheading */}
-          <p className="text-lg sm:text-xl text-gray-100 max-w-3xl leading-relaxed drop-shadow-lg">
+          {/* Subtítulo */}
+          <p className="text-lg sm:text-xl text-white max-w-3xl leading-relaxed drop-shadow-md animate-slide-up delay-200">
             Explora más de 2,450 programas académicos en 254 instituciones TecNM distribuidas en los 32 estados de
             México. Encuentra la carrera, modalidad y campus perfecto para tu futuro.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Link href="/search">
-              <button className="bg-white text-black hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-xl">
+          {/* Botones de Acción */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 animate-slide-up delay-300">
+            
+            {/* Botón 1: Comenzar Búsqueda */}
+            <a 
+              href="/search"
+              className="bg-white text-black hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-xl btn-push"
+            >
                 Comenzar búsqueda
                 <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
+            </a>
 
+            {/* Botón 2: Conocer Más (enlazado a #features) */}
             <a
-              href="https://static.vecteezy.com/system/resources/previews/032/159/817/non_2x/100-percent-perfect-rubber-grunge-stamp-seal-vector.jpg"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#features"
+              className="px-8 py-3 rounded-lg font-semibold bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white/20 hover:border-white/50 text-white transition-all duration-300 btn-push"
             >
-              <button className="px-8 py-3 rounded-lg font-semibold bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:bg-white/20 hover:border-white/50 text-white transition-all duration-300 hover:scale-105">
                 Conocer más
-              </button>
             </a>
           </div>
 
-
-          {/* Trust section */}
-          <div className="pt-8 border-t border-white/20 w-full">
+          {/* Sección de Confianza */}
+          <div className="pt-8 border-t border-white/20 w-full animate-slide-up delay-400">
             <p className="text-sm text-gray-200 mb-6">Confían en Ample más de 50,000 estudiantes</p>
             <div className="flex justify-center items-center gap-8 flex-wrap">
               {["TecNM", "CONACYT", "SEP"].map((org) => (
@@ -83,8 +84,8 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-grey to-transparent z-5"></div>
+      {/* Gradiente inferior (no afecta legibilidad) */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-5"></div>
     </section>
   )
 }

@@ -120,8 +120,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  /* --- AÑADIDO: Scroll suave --- */
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+    /* --- AÑADIDO: Animación de fundido al cargar la página --- */
+    animation: page-fade-in 0.5s ease-out;
   }
 }
 
@@ -207,5 +215,74 @@
 
   .delay-400 {
     animation-delay: 0.4s;
+  }
+
+  /* --- AÑADIDOS PARA NAVEGACIÓN Y DISEÑO --- */
+
+  /* 1. Keyframes para la animación de carga de página (usado en 'body') */
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 2. Clases de utilidad para Interacciones (Hover) */
+
+  /* Para links de navegación (subrayado animado) */
+  /* Úsalo en tu JSX/HTML: <Link href="/" class="nav-link-hover">Inicio</Link> */
+  .nav-link-hover {
+    @apply relative py-1; /* Ajusta 'py-1' según tu diseño */
+  }
+  .nav-link-hover::after {
+    @apply content-[''] absolute bottom-0 left-0 h-[2px] w-full scale-x-0;
+    @apply bg-primary transition-transform duration-300 ease-out origin-bottom-right;
+  }
+  .nav-link-hover:hover::after {
+    @apply scale-x-100 origin-bottom-left;
+  }
+
+  /* Para botones (efecto "push" al hacer clic) */
+  /* Úsalo en tu JSX/HTML: <button class="btn-push bg-primary ...">Click</button> */
+  .btn-push {
+    @apply transition-transform duration-100 ease-out;
+  }
+  .btn-push:hover {
+    @apply scale-[1.02];
+  }
+  .btn-push:active {
+    @apply scale-[0.98]; /* Se encoge al presionar */
+  }
+
+  /* Para tarjetas (efecto "lift" al hacer hover) */
+  /* Úsalo en tu JSX/HTML: <div class="card-lift border ...">...</div> */
+  .card-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+  .card-lift:hover {
+    @apply scale-[1.03] shadow-lg dark:shadow-black/30;
+  }
+
+  /* --- AÑADIDO: Animación de gradiente en bucle --- */
+  @keyframes animate-gradient-text {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animated-gradient-text {
+    /* --- MODIFICADO --- Gradiente con más contraste (Plateado a Azul Oscuro) y más rápido */
+    /* Colores de tu paleta: plateado-azulado -> azul oscuro -> plateado-azulado */
+    @apply bg-gradient-to-r from-[#c3cee6] via-[#253d7e] to-[#c3cee6];
+    background-size: 200% 200%;
+    animation: animate-gradient-text 4s ease infinite; /* Más rápido (de 6s a 4s) */
   }
 }

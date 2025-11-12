@@ -119,7 +119,101 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  /* --- AÑADIDO: Scroll suave --- */
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+    /* --- AÑADIDO: Animación de fundido al cargar la página --- */
+    animation: page-fade-in 0.5s ease-out;
+  }
+}
+
+/* --- AÑADIDO: Capa de componentes para animaciones y utilidades --- */
+@layer components {
+  /* 1. Keyframes para las animaciones */
+
+  /* Para el 'body' (carga de página) */
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Para elementos que aparecen (títulos, tarjetas, etc.) */
+  @keyframes slide-up-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* 2. Clases de utilidad para aplicar animaciones (para usar en HTML/JSX) */
+
+  /* Ejemplo: <h1 class="animate-slide-up">...</h1> */
+  .animate-slide-up {
+    animation: slide-up-fade-in 0.6s ease-out;
+  }
+
+  /* Ejemplo: <div class="animate-scale-in">...</div> */
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out;
+  }
+
+  /* 3. Clases de utilidad para Interacciones (Hover) */
+
+  /* Para links de navegación (subrayado animado) */
+  /* Ejemplo: <Link href="/" class="nav-link-hover">Inicio</Link> */
+  .nav-link-hover {
+    @apply relative py-1; /* Ajusta 'py-1' según tu diseño */
+  }
+  .nav-link-hover::after {
+    @apply content-[''] absolute bottom-0 left-0 h-[2px] w-full scale-x-0;
+    @apply bg-primary transition-transform duration-300 ease-out origin-bottom-right;
+  }
+  .nav-link-hover:hover::after {
+    @apply scale-x-100 origin-bottom-left;
+  }
+
+  /* Para botones (efecto "push" al hacer clic) */
+  /* Ejemplo: <button class="btn-push ...">Click</button> */
+  .btn-push {
+    @apply transition-transform duration-100 ease-out;
+  }
+  .btn-push:hover {
+    @apply scale-[1.02];
+  }
+  .btn-push:active {
+    @apply scale-[0.98]; /* Se encoge al presionar */
+  }
+
+  /* Para tarjetas (efecto "lift" al hacer hover) */
+  /* Ejemplo: <div class="card-lift ...">...</div> */
+  .card-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+  .card-lift:hover {
+    @apply scale-[1.03] shadow-lg dark:shadow-black/30;
   }
 }
