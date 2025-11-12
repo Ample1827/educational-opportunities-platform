@@ -54,22 +54,26 @@ export function SearchPreview() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          {/* MODIFICADO: Animación de entrada */}
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 animate-slide-up">
             Encuentra tu programa ideal
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          {/* MODIFICADO: Animación de entrada con retraso */}
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto animate-slide-up delay-100">
             Busca por universidad o por estado para descubrir los programas disponibles
           </p>
         </div>
 
         {/* Search Box */}
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8">
+        {/* MODIFICADO: Animación de entrada y efecto hover */}
+        <div className="max-w-4xl mx-auto animate-scale-in delay-200">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 card-lift">
             {/* Tab Buttons */}
             <div className="flex gap-3 mb-6 bg-gray-100 p-1.5 rounded-xl">
               <button
                 onClick={() => setSearchTab("university")}
-                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                /* MODIFICADO: Añadida clase btn-push */
+                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 btn-push ${
                   searchTab === "university"
                     ? "bg-white text-gray-900 shadow-md"
                     : "text-gray-600 hover:text-gray-900"
@@ -79,7 +83,8 @@ export function SearchPreview() {
               </button>
               <button
                 onClick={() => setSearchTab("state")}
-                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                /* MODIFICADO: Añadida clase btn-push */
+                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 btn-push ${
                   searchTab === "state"
                     ? "bg-white text-gray-900 shadow-md"
                     : "text-gray-600 hover:text-gray-900"
@@ -116,7 +121,8 @@ export function SearchPreview() {
                   <button
                     onClick={handleSearch}
                     disabled={!selectedUniversity || loading}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                    /* MODIFICADO: Añadida clase btn-push */
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl btn-push"
                   >
                     <Search className="w-5 h-5" />
                     Buscar programas
@@ -147,7 +153,8 @@ export function SearchPreview() {
                   <button
                     onClick={handleSearch}
                     disabled={!selectedState || loading}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                    /* MODIFICADO: Añadida clase btn-push */
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl btn-push"
                   >
                     <Search className="w-5 h-5" />
                     Buscar programas
@@ -156,7 +163,7 @@ export function SearchPreview() {
               )}
             </div>
           </div>
-
+          
           {/* Quick Stats */}
           
         </div>

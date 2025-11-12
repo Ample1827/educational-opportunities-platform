@@ -23,7 +23,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es">
+    // {/* MODIFICADO */}
+    // Añadimos 'suppressHydrationWarning' para silenciar el error de 'next-themes'
+    <html lang="es" suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
         <Providers>{children}</Providers>
         <Analytics />
