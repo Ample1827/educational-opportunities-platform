@@ -10,7 +10,8 @@ export async function GET(request) {
     const universidad = searchParams.get('universidad')
     const modalidad = searchParams.get('modalidad')
     const grado = searchParams.get('grado')
-    const carrera = searchParams.get('carrera')
+    const programa = searchParams.get('programa') || searchParams.get('carrera') // Support both
+    const tipo = searchParams.get('tipo') // NEW: Filter by Licenciatura/Posgrado
     const search = searchParams.get('search')
     
     const page = parseInt(searchParams.get('page') || '1')
@@ -26,12 +27,15 @@ export async function GET(request) {
     if (universidad) query['Nombre del tecnológico'] = universidad
     if (modalidad) query.Modalidad = modalidad
     if (grado) query['Grado que otorga'] = grado
-    if (carrera) query.Carrera = { $regex: carrera, $options: 'i' }
+    if (tipo) query.Tipo = tipo // NEW: Filter by program type
+    if (programa) query.Programa = { $regex: programa, $options: 'i' } // Updated field name
+    
     if (search) {
       query.$or = [
         { Estado: { $regex: search, $options: 'i' } },
         { 'Nombre del tecnológico': { $regex: search, $options: 'i' } },
-        { Carrera: { $regex: search, $options: 'i' } }
+        { Programa: { $regex: search, $options: 'i' } }, // Updated field name
+        { Tipo: { $regex: search, $options: 'i' } } // NEW: Search by type
       ]
     }
 
@@ -72,9 +76,10 @@ export async function POST(request) {
     const requiredFields = [
       'Estado',
       'Nombre del tecnológico',
-      'Carrera',
+      'Programa', // Updated from 'Carrera'
       'Modalidad',
-      'Grado que otorga'
+      'Grado que otorga',
+      'Tipo' // NEW: Required field
     ]
     
     for (const field of requiredFields) {
@@ -84,6 +89,14 @@ export async function POST(request) {
           { status: 400 }
         )
       }
+    }
+
+    // Validate Tipo field
+    if (!['Licenciatura', 'Posgrado'].includes(body.Tipo)) {
+      return NextResponse.json(
+        { success: false, error: 'Tipo must be either "Licenciatura" or "Posgrado"' },
+        { status: 400 }
+      )
     }
 
     const db = await getDatabase()

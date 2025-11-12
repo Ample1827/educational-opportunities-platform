@@ -5,7 +5,8 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
-    const estado = searchParams.get('estado') // NEW: Filter by estado
+    const estado = searchParams.get('estado')
+    const tipo = searchParams.get('tipo') // NEW: Filter by Tipo (Licenciatura/Posgrado)
 
     const db = await getDatabase()
     const collection = db.collection('tecnologicos')
@@ -25,7 +26,11 @@ export async function GET(request) {
         field = 'Grado que otorga'
         break
       case 'carreras':
-        field = 'Carrera'
+      case 'programas':
+        field = 'Programa' // Updated to use unified "Programa" field
+        break
+      case 'tipos':
+        field = 'Tipo' // NEW: Get Licenciatura/Posgrado types
         break
       default:
         return NextResponse.json(
@@ -34,13 +39,18 @@ export async function GET(request) {
         )
     }
 
-    // Build query - if estado is provided, only return options for that estado
+    // Build query - support filtering by estado and/or tipo
     let query = {}
+    
     if (estado && type !== 'estados') {
       query.Estado = estado
     }
+    
+    if (tipo && type !== 'tipos') {
+      query.Tipo = tipo
+    }
 
-    // Get distinct values with optional estado filter
+    // Get distinct values with optional filters
     const values = await collection.distinct(field, query)
     const sorted = values.filter(v => v).sort()
 

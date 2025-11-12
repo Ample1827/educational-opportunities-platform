@@ -5,7 +5,6 @@ import { ObjectId } from 'mongodb'
 // GET - Fetch single opportunity by ID
 export async function GET(request, { params }) {
   try {
-    // CRITICAL FIX: await params before accessing its properties
     const { id } = await params
     
     console.log('Fetching opportunity with ID:', id)
@@ -56,7 +55,6 @@ export async function GET(request, { params }) {
 // PUT - Update opportunity
 export async function PUT(request, { params }) {
   try {
-    // CRITICAL FIX: await params before accessing its properties
     const { id } = await params
     const body = await request.json()
     
@@ -70,8 +68,23 @@ export async function PUT(request, { params }) {
     const db = await getDatabase()
     const collection = db.collection('tecnologicos')
 
+    // Remove _id from update and add metadata
     const { _id, ...updateData } = body
     updateData.updatedAt = new Date()
+
+    // Validate required fields for the unified structure
+    const requiredFields = ['Estado', 'Nombre del tecnológico', 'Tipo', 'Programa']
+    const missingFields = requiredFields.filter(field => !updateData[field] && !body[field])
+    
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: `Missing required fields: ${missingFields.join(', ')}` 
+        },
+        { status: 400 }
+      )
+    }
 
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
@@ -108,7 +121,6 @@ export async function PUT(request, { params }) {
 // DELETE - Remove opportunity
 export async function DELETE(request, { params }) {
   try {
-    // CRITICAL FIX: await params before accessing its properties
     const { id } = await params
     
     if (!ObjectId.isValid(id)) {
