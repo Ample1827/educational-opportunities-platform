@@ -112,82 +112,235 @@
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--border);
-  --color-sidebar-ring: var(--ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
+  
+  /* Scroll suave */
   html {
     @apply scroll-smooth;
   }
 
   body {
     @apply bg-background text-foreground;
+    /* Animación de fundido al cargar la página */
     animation: page-fade-in 0.5s ease-out;
   }
 }
 
 @layer components {
-  /* ... (Otras clases y keyframes sin cambios) ... */
-  .gradient-blur { @apply blur-3xl; }
-  .fade-in { @apply animate-in fade-in duration-700; }
-  @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-  @keyframes glow-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-  @keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-  .animate-slide-up { animation: slide-up 0.6s ease-out; }
-  .animate-float { animation: float 3s ease-in-out infinite; }
-  .animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
-  .animate-scale-in { animation: scale-in 0.5s ease-out; }
-  .delay-100 { animation-delay: 0.1s; }
-  .delay-200 { animation-delay: 0.2s; }
-  .delay-300 { animation-delay: 0.3s; }
-  .delay-400 { animation-delay: 0.4s; }
-  @keyframes page-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .gradient-blur {
+    @apply blur-3xl;
+  }
+  .fade-in {
+    @apply animate-in fade-in duration-700;
+  }
 
-  .nav-link-hover { @apply relative py-1; }
-  .nav-link-hover::after { @apply content-[''] absolute bottom-0 left-0 h-[2px] w-full scale-x-0; @apply bg-primary transition-transform duration-300 ease-out origin-bottom-right; }
-  .nav-link-hover:hover::after { @apply scale-x-100 origin-bottom-left; }
+  /* --- ANIMACIONES BASE --- */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-  .btn-push { @apply transition-transform duration-100 ease-out; }
-  .btn-push:hover { @apply scale-[1.02]; }
-  .btn-push:active { @apply scale-[0.98]; }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 
-  /* --- MODIFICADO --- */
-  /* Transición de hover más rápida (200ms) y más específica */
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out;
+  }
+
+  .delay-100 {
+    animation-delay: 0.1s;
+  }
+
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .delay-300 {
+    animation-delay: 0.3s;
+  }
+
+  .delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  /* --- ANIMACIÓN DE CARGA DE PÁGINA --- */
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* --- INTERACCIONES DE HOVER --- */
+
+  /* Para links de navegación (subrayado animado) */
+  .nav-link-hover {
+    @apply relative py-1;
+  }
+  /* CORREGIDO: Sintaxis de 'content' */
+  .nav-link-hover::after {
+    content: ''; 
+    @apply absolute bottom-0 left-0 h-[2px] w-full scale-x-0;
+    @apply bg-primary transition-transform duration-300 ease-out origin-bottom-right;
+  }
+  .nav-link-hover:hover::after {
+    @apply scale-x-100 origin-bottom-left;
+  }
+
+  /* Para botones (efecto "push" al hacer clic) */
+  .btn-push {
+    @apply transition-transform duration-100 ease-out;
+  }
+  .btn-push:hover {
+    @apply scale-[1.02];
+  }
+  .btn-push:active {
+    @apply scale-[0.98];
+  }
+
+  /* Para tarjetas (efecto "lift" al hacer hover) */
   .card-lift {
-    @apply transition-[transform,box-shadow] duration-200 ease-out;
+    /* CORREGIDO: Transición más rápida (200ms) */
+    @apply transition-all duration-200 ease-out;
   }
   .card-lift:hover {
     @apply scale-[1.03] shadow-lg dark:shadow-black/30;
   }
-  /* --- FIN DE LA MODIFICACIÓN --- */
 
-  @keyframes animate-gradient-slide {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  /* --- TEXTO DE GRADIENTE ANIMADO (INTENSO) --- */
+  @keyframes animate-gradient-text {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  .animated-gradient-text {
+    @apply bg-clip-text text-transparent;
+    /* CORREGIDO: Gradiente intenso y animación más rápida */
+    background-size: 200% 200%;
+    background-image: linear-gradient(
+      -45deg,
+      #c3cee6, /* Plateado-azulado */
+      #253d7e, /* Azul oscuro */
+      #8591b0, /* Azul-gris */
+      #c3cee6  /* Plateado-azulado */
+    );
+    animation: animate-gradient-text 4s ease-in-out infinite;
   }
 
-  .animated-gradient-text {
-    @apply bg-gradient-to-r from-[#c3cee6] via-[#253d7e] to-[#8591b0];
-    background-size: 200% auto;
-    animation: animate-gradient-slide 4s ease-in-out infinite;
+  /* --- BORDE DE GRADIENTE DESLIZANTE (NO GIRA) --- */
+  @keyframes animate-gradient-slide {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
 
   .animated-border-wrapper {
-    @apply rounded-xl p-[2px]; /* Grosor del borde */
-    @apply bg-gradient-to-r from-[#c3cee6] via-[#253d7e] to-[#8591b0];
-    background-size: 200% auto;
-    animation: animate-gradient-slide 4s ease-in-out infinite;
+    @apply relative p-[2px]; /* El 'padding' es el grosor del borde */
+    @apply rounded-xl; /* Asegura que el contenedor tenga bordes redondeados */
+    overflow: hidden;
+
+    /* El fondo es el gradiente animado */
+    background-size: 300% 300%;
+    background-image: linear-gradient(
+      -45deg,
+      theme(colors.primary),
+      #c3cee6,
+      theme(colors.secondary),
+      theme(colors.primary)
+    );
+    animation: animate-gradient-slide 6s ease-in-out infinite;
   }
 
   .animated-border-inner {
-    @apply bg-card rounded-[10px]; /* Radio interior */
+    /* El color de la tarjeta (card) oculta el fondo, excepto en los bordes */
+    @apply bg-card text-card-foreground;
+    @apply rounded-[0.5625rem]; /* Un poco menos que el wrapper (0.625rem - 2px) */
     @apply w-full h-full;
+  }
+
+  /* --- EFECTO KEN BURNS PARA IMAGEN HERO --- */
+  @keyframes ken-burns {
+    0% {
+      transform: scale(1) translate(0, 0);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scale(1.1) translate(-2%, 2%);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) translate(0, 0);
+      opacity: 0.9;
+    }
+  }
+  .animate-ken-burns {
+    animation: ken-burns 20s ease-in-out infinite;
   }
 }
