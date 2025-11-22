@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { AdminTable } from "@/components/admin/admin-table"
+import { AdminCharts } from "@/components/admin/admin-charts"
 import { CreateOpportunityModal } from "@/components/admin/create-opportunity-modal"
 import { EditOpportunityModal } from "@/components/admin/edit-opportunity-modal"
 import { DeleteConfirmModal } from "@/components/admin/delete-confirm-modal"
@@ -71,9 +72,9 @@ export default function AdminPage() {
         const params = new URLSearchParams({
           page: page.toString(),
           limit: limit.toString(),
-          ...(searchTerm && { search: searchTerm })
+          ...(searchTerm && { search: searchTerm }),
         })
-        
+
         const response = await fetch(`/api/opportunities?${params}`)
         const data = await response.json()
 
@@ -97,7 +98,7 @@ export default function AdminPage() {
 
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/stats')
+        const response = await fetch("/api/stats")
         const data = await response.json()
 
         if (data.success) {
@@ -117,10 +118,10 @@ export default function AdminPage() {
 
   const handleCreate = async (newOpp: Omit<Opportunity, "_id">) => {
     try {
-      const response = await fetch('/api/opportunities', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newOpp)
+      const response = await fetch("/api/opportunities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOpp),
       })
 
       const data = await response.json()
@@ -128,46 +129,44 @@ export default function AdminPage() {
       if (data.success) {
         setOpportunities([data.data, ...opportunities])
         setShowCreateModal(false)
-        alert('✅ Oportunidad creada exitosamente')
+        alert("✅ Oportunidad creada exitosamente")
       } else {
-        alert('❌ Error: ' + data.error)
+        alert("❌ Error: " + data.error)
       }
     } catch (error) {
       console.error("Error creating opportunity:", error)
-      alert('❌ Error al crear oportunidad')
+      alert("❌ Error al crear oportunidad")
     }
   }
 
   const handleEdit = async (updatedOpp: Opportunity) => {
     try {
       const response = await fetch(`/api/opportunities/${updatedOpp._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedOpp)
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedOpp),
       })
 
       const data = await response.json()
 
       if (data.success) {
-        setOpportunities(opportunities.map((opp) => 
-          opp._id === updatedOpp._id ? data.data : opp
-        ))
+        setOpportunities(opportunities.map((opp) => (opp._id === updatedOpp._id ? data.data : opp)))
         setShowEditModal(false)
         setSelectedOpportunity(null)
-        alert('✅ Oportunidad actualizada exitosamente')
+        alert("✅ Oportunidad actualizada exitosamente")
       } else {
-        alert('❌ Error: ' + data.error)
+        alert("❌ Error: " + data.error)
       }
     } catch (error) {
       console.error("Error updating opportunity:", error)
-      alert('❌ Error al actualizar oportunidad')
+      alert("❌ Error al actualizar oportunidad")
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/opportunities/${id}`, {
-        method: 'DELETE'
+        method: "DELETE",
       })
 
       const data = await response.json()
@@ -176,13 +175,13 @@ export default function AdminPage() {
         setOpportunities(opportunities.filter((opp) => opp._id !== id))
         setShowDeleteModal(false)
         setSelectedOpportunity(null)
-        alert('✅ Oportunidad eliminada exitosamente')
+        alert("✅ Oportunidad eliminada exitosamente")
       } else {
-        alert('❌ Error: ' + data.error)
+        alert("❌ Error: " + data.error)
       }
     } catch (error) {
       console.error("Error deleting opportunity:", error)
-      alert('❌ Error al eliminar oportunidad')
+      alert("❌ Error al eliminar oportunidad")
     }
   }
 
@@ -197,14 +196,12 @@ export default function AdminPage() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error('Error copying to clipboard:', error)
+      console.error("Error copying to clipboard:", error)
     }
   }
 
   // Calculate top states from stats
-  const topStates = stats?.modalityBreakdown 
-    ? stats.modalityBreakdown.slice(0, 5)
-    : []
+  const topStates = stats?.modalityBreakdown ? stats.modalityBreakdown.slice(0, 5) : []
 
   return (
     <AdminLayout onLogout={handleLogout} activeTab={activeTab} onTabChange={setActiveTab}>
@@ -248,9 +245,7 @@ export default function AdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Tecnológicos</p>
-                      <h3 className="text-3xl font-bold text-foreground mt-2">
-                        {stats.totalUniversities}
-                      </h3>
+                      <h3 className="text-3xl font-bold text-foreground mt-2">{stats.totalUniversities}</h3>
                     </div>
                     <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
                       <Users className="w-6 h-6 text-blue-500" />
@@ -262,9 +257,7 @@ export default function AdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Estados</p>
-                      <h3 className="text-3xl font-bold text-foreground mt-2">
-                        {stats.totalStates}
-                      </h3>
+                      <h3 className="text-3xl font-bold text-foreground mt-2">{stats.totalStates}</h3>
                     </div>
                     <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
                       <MapPin className="w-6 h-6 text-green-500" />
@@ -276,9 +269,7 @@ export default function AdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Carreras</p>
-                      <h3 className="text-3xl font-bold text-foreground mt-2">
-                        {stats.totalCareers}
-                      </h3>
+                      <h3 className="text-3xl font-bold text-foreground mt-2">{stats.totalCareers}</h3>
                     </div>
                     <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-purple-500" />
@@ -287,55 +278,8 @@ export default function AdminPage() {
                 </Card>
               </div>
 
-              {/* Modality Breakdown */}
-              {stats.modalityBreakdown && stats.modalityBreakdown.length > 0 && (
-                <Card className="p-6 border border-border bg-card">
-                  <h3 className="text-lg font-bold text-foreground mb-4">Programas por Modalidad</h3>
-                  <div className="space-y-3">
-                    {stats.modalityBreakdown.map((item) => (
-                      <div key={item.name} className="flex items-center justify-between">
-                        <span className="text-sm text-foreground font-medium">{item.name}</span>
-                        <div className="flex items-center gap-3">
-                          <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-primary rounded-full transition-all duration-500"
-                              style={{ width: `${(item.count / stats.totalOpportunities) * 100}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-muted-foreground font-semibold w-16 text-right">
-                            {item.count.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              )}
-
-              {/* Degree Breakdown */}
-              {stats.degreeBreakdown && stats.degreeBreakdown.length > 0 && (
-                <Card className="p-6 border border-border bg-card">
-                  <h3 className="text-lg font-bold text-foreground mb-4">Programas por Grado</h3>
-                  <div className="space-y-3">
-                    {stats.degreeBreakdown.map((item) => (
-                      <div key={item.name} className="flex items-center justify-between">
-                        <span className="text-sm text-foreground font-medium">{item.name}</span>
-                        <div className="flex items-center gap-3">
-                          <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 rounded-full transition-all duration-500"
-                              style={{ width: `${(item.count / stats.totalOpportunities) * 100}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-muted-foreground font-semibold w-16 text-right">
-                            {item.count.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              )}
+              {/* AdminCharts Component */}
+              <AdminCharts stats={stats} />
             </>
           )}
 
@@ -466,11 +410,7 @@ export default function AdminPage() {
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-6">
-                  <Button
-                    variant="outline"
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                  >
+                  <Button variant="outline" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
                     Anterior
                   </Button>
                   <span className="flex items-center px-4 text-sm text-muted-foreground">
@@ -478,7 +418,7 @@ export default function AdminPage() {
                   </span>
                   <Button
                     variant="outline"
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
                   >
                     Siguiente
@@ -491,11 +431,7 @@ export default function AdminPage() {
       )}
 
       {/* Modals */}
-      <CreateOpportunityModal 
-        open={showCreateModal} 
-        onOpenChange={setShowCreateModal} 
-        onCreateSuccess={handleCreate} 
-      />
+      <CreateOpportunityModal open={showCreateModal} onOpenChange={setShowCreateModal} onCreateSuccess={handleCreate} />
 
       {selectedOpportunity && (
         <>
