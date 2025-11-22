@@ -36,7 +36,7 @@ interface ModalityChartsProps {
 const COLORS = ["#0C2B4E", "#1A3D64", "#1D546C", "#4ade80", "#f43f5e"]
 
 export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps) {
-  const [selectedState, setSelectedState] = useState<string>("all")
+  const [filterValue, setFilterValue] = useState<string>("limit-10")
 
   // Prepare data for the pie chart
   const pieData = nationalData.map((item, index) => ({
@@ -45,11 +45,21 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
   }))
 
   // Prepare data for the state bar chart
-  // If specific state is selected, show that one, otherwise show top 10
-  const barData =
-    selectedState === "all"
-      ? stateData.slice(0, 10) // Top 10 by default
-      : stateData.filter((s) => s.name === selectedState)
+  let barData = []
+  if (filterValue.startsWith("limit-")) {
+    const limitStr = filterValue.replace("limit-", "")
+    if (limitStr === "all") {
+      barData = stateData
+    } else {
+      const limit = Number.parseInt(limitStr, 10)
+      barData = stateData.slice(0, limit)
+    }
+  } else {
+    // It's a specific state
+    barData = stateData.filter((s) => s.name === filterValue)
+  }
+
+  const dynamicHeight = Math.max(300, barData.length * 50)
 
   // Get keys for the stacked bar chart (excluding name, total, and Pct fields)
   const dataKeys =
@@ -97,12 +107,16 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
             <CardDescription>Comparativa de modalidades</CardDescription>
           </div>
           <div className="w-[180px]">
-            <Select value={selectedState} onValueChange={setSelectedState}>
+            <Select value={filterValue} onValueChange={setFilterValue}>
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por estado" />
+                <SelectValue placeholder="Filtrar vista" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Top 10 Estados</SelectItem>
+                <SelectItem value="limit-3">Top 3 Estados</SelectItem>
+                <SelectItem value="limit-5">Top 5 Estados</SelectItem>
+                <SelectItem value="limit-10">Top 10 Estados</SelectItem>
+                <SelectItem value="limit-all">Todos los Estados</SelectItem>
+                <div className="my-1 border-t" />
                 {[...stateData]
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((state) => (
@@ -115,7 +129,7 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
           </div>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="h-[300px] w-full">
+          <div style={{ height: `${dynamicHeight}px`, width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
