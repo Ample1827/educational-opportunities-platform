@@ -45,8 +45,9 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
   }))
 
   // Prepare data for the state bar chart
-  // If specific state is selected, show that one, otherwise show all available data
   const barData = selectedState === "all" ? stateData : stateData.filter((s) => s.name === selectedState)
+
+  const chartHeight = Math.max(300, barData.length * 40)
 
   // Get keys for the stacked bar chart (excluding name, total, and Pct fields)
   const dataKeys =
@@ -99,7 +100,7 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
                 <SelectValue placeholder="Filtrar por estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los listados</SelectItem>
+                <SelectItem value="all">Vista General</SelectItem>
                 {[...stateData]
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((state) => (
@@ -112,7 +113,7 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
           </div>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="h-[300px] w-full">
+          <div className="w-full" style={{ height: `${chartHeight}px` }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
