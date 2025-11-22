@@ -13,18 +13,18 @@ export async function GET() {
         collection.distinct("Estado").then((arr) => arr.length),
         collection
           .distinct("Programa")
-          .then((arr) => arr.length), // Updated from 'Carrera'
-        collection.countDocuments({ Tipo: "Licenciatura" }), // NEW
-        collection.countDocuments({ Tipo: "Posgrado" }), // NEW
+          .then((arr) => arr.length),
+        collection.countDocuments({ "Tipo de carrera": "Licenciatura" }), // FIXED: Use correct field name
+        collection.countDocuments({ "Tipo de carrera": "Posgrado" }), // FIXED: Use correct field name
       ])
 
     const [
       modalityBreakdown,
       degreeBreakdown,
-      typeBreakdown, // NEW: Breakdown by Licenciatura/Posgrado
+      typeBreakdown,
       topUniversities,
       topStates,
-      modalityBreakdownByState, // NEW: Aggregation for modality by state
+      modalityBreakdownByState,
     ] = await Promise.all([
       collection.aggregate([{ $group: { _id: "$Modalidad", count: { $sum: 1 } } }, { $sort: { count: -1 } }]).toArray(),
 
@@ -32,12 +32,12 @@ export async function GET() {
         .aggregate([{ $group: { _id: "$Grado que otorga", count: { $sum: 1 } } }, { $sort: { count: -1 } }])
         .toArray(),
 
-      // NEW: Type breakdown
+      // FIXED: Use correct field name "Tipo de carrera"
       collection
-        .aggregate([{ $group: { _id: "$Tipo", count: { $sum: 1 } } }, { $sort: { count: -1 } }])
+        .aggregate([{ $group: { _id: "$Tipo de carrera", count: { $sum: 1 } } }, { $sort: { count: -1 } }])
         .toArray(),
 
-      // NEW: Top universities by program count
+      // Top universities by program count
       collection
         .aggregate([
           { $group: { _id: "$Nombre del tecnológico", count: { $sum: 1 } } },
@@ -46,12 +46,12 @@ export async function GET() {
         ])
         .toArray(),
 
-      // NEW: Top states by program count
+      // Top states by program count
       collection
         .aggregate([{ $group: { _id: "$Estado", count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: 10 }])
         .toArray(),
 
-      // NEW: Add aggregation for modality by state
+      // Aggregation for modality by state
       collection
         .aggregate([
           {
@@ -109,9 +109,9 @@ export async function GET() {
         totalOpportunities,
         totalUniversities,
         totalStates,
-        totalPrograms, // Updated from totalCareers
-        totalLicenciaturas, // NEW
-        totalPosgrados, // NEW
+        totalPrograms,
+        totalLicenciaturas,
+        totalPosgrados,
 
         // Breakdowns
         modalityBreakdown: modalityBreakdown.map((m) => ({
@@ -125,13 +125,13 @@ export async function GET() {
         typeBreakdown: typeBreakdown.map((t) => ({
           name: t._id || "Sin tipo",
           count: t.count,
-        })), // NEW
+        })),
 
         // Top rankings
         topUniversities: topUniversities.map((u) => ({
           name: u._id,
           count: u.count,
-        })), // NEW
+        })),
         topStates: topStates.map((s) => ({
           name: s._id,
           count: s.count,

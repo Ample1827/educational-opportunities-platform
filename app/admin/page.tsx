@@ -270,6 +270,7 @@ export default function AdminPage() {
                   </div>
                 </Card>
 
+                {/*
                 <Card className="p-6 border border-border bg-card hover:shadow-lg transition-shadow">
                   <div className="flex items-center justify-between">
                     <div>
@@ -281,6 +282,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                 </Card>
+                */}
 
                 {/* New Cards for Licenciatura/Posgrado */}
                 <Card className="p-6 border border-border bg-card hover:shadow-lg transition-shadow">
