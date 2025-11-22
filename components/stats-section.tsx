@@ -1,13 +1,15 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Loader2 } from "lucide-react"
+import { ModalityCharts } from "@/components/modality-charts" // Import the new chart component
 
 interface Stats {
   totalOpportunities: number
   totalUniversities: number
   totalStates: number
   totalCareers: number
+  modalityBreakdown: Array<{ name: string; count: number }> // Add breakdown types
+  modalityByState: Array<{ name: string; total: number; [key: string]: any }>
 }
 
 // Añadido 'start' para controlar cuándo empieza la animación
@@ -58,7 +60,7 @@ export function StatsSection() {
       },
       {
         threshold: 0.1, // Activa cuando el 10% es visible
-      }
+      },
     )
 
     if (sectionRef.current) {
@@ -71,7 +73,7 @@ export function StatsSection() {
       }
     }
   }, [])
-  
+
   // Pasamos 'isVisible' como el trigger 'start'
   const animatedOpportunities = useCountUp(stats?.totalOpportunities || 0, 2000, isVisible)
   const animatedUniversities = useCountUp(stats?.totalUniversities || 0, 2000, isVisible)
@@ -94,7 +96,9 @@ export function StatsSection() {
 
   // Envolvemos todo en una <section> con la ref
   return (
-    <section ref={sectionRef} className="py-12"> {/* Ajusta el padding si es necesario */}
+    <section ref={sectionRef} className="py-12 bg-slate-50">
+      {" "}
+      {/* Added background color */}
       {loading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {[1, 2, 3].map((i) => (
@@ -106,42 +110,50 @@ export function StatsSection() {
           ))}
         </div>
       )}
-
       {!loading && stats && (
-        // Animación de entrada para todo el grupo de tarjetas
-        <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto transition-all duration-700 ${
-          isVisible ? "animate-slide-up" : "opacity-0 translate-y-4"
-        }`}>
-          
-          {/* --- TARJETA 1 (Programas) --- */}
-          {/* MODIFICADO: Usando la estructura de borde deslizante */}
-          <div className="animated-border-wrapper">
-            <div className="animated-border-inner p-8 text-center card-lift">
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-                {animatedOpportunities.toLocaleString()}+
+        <div className="container mx-auto px-4">
+          {" "}
+          {/* Added container wrapper */}
+          {/* Animated Stats Cards */}
+          <div
+            className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 transition-all duration-700 ${
+              isVisible ? "animate-slide-up" : "opacity-0 translate-y-4"
+            }`}
+          >
+            {/* --- TARJETA 1 (Programas) --- */}
+            <div className="animated-border-wrapper">
+              <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
+                <div className="text-4xl md:text-5xl font-bold text-[#0C2B4E] mb-2">
+                  {animatedOpportunities.toLocaleString()}+
+                </div>
+                <div className="text-lg text-muted-foreground font-medium">Programas</div>
               </div>
-              <div className="text-lg text-muted-foreground">Programas</div>
+            </div>
+
+            {/* --- TARJETA 2 (Tecnológicos) --- */}
+            <div className="animated-border-wrapper">
+              <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
+                <div className="text-4xl md:text-5xl font-bold text-[#1D546C] mb-2">{animatedUniversities}</div>
+                <div className="text-lg text-muted-foreground font-medium">Tecnológicos</div>
+              </div>
+            </div>
+
+            {/* --- TARJETA 3 (Estados) --- */}
+            <div className="animated-border-wrapper">
+              <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
+                <div className="text-4xl md:text-5xl font-bold text-[#1A3D64] mb-2">{animatedStates}</div>
+                <div className="text-lg text-muted-foreground font-medium">Estados</div>
+              </div>
             </div>
           </div>
-
-          {/* --- TARJETA 2 (Tecnológicos) --- */}
-          {/* MODIFICADO: Usando la estructura de borde deslizante */}
-          <div className="animated-border-wrapper">
-            <div className="animated-border-inner p-8 text-center card-lift">
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-2">{animatedUniversities}</div>
-              <div className="text-lg text-muted-foreground">Tecnológicos</div>
-            </div>
+          <div
+            className={`transition-all duration-700 delay-300 ${
+              isVisible ? "animate-slide-up opacity-100" : "opacity-0 translate-y-8"
+            }`}
+          >
+            <h2 className="text-2xl font-bold text-center text-[#0C2B4E] mb-8">Panorama Educativo Nacional</h2>
+            <ModalityCharts nationalData={stats.modalityBreakdown || []} stateData={stats.modalityByState || []} />
           </div>
-
-          {/* --- TARJETA 3 (Estados) --- */}
-          {/* MODIFICADO: Usando la estructura de borde deslizante */}
-          <div className="animated-border-wrapper">
-            <div className="animated-border-inner p-8 text-center card-lift">
-              <div className="text-4xl md:text-5xl font-bold text-primary mb-2">{animatedStates}</div>
-              <div className="text-lg text-muted-foreground">Estados</div>
-            </div>
-          </div>
-
         </div>
       )}
     </section>

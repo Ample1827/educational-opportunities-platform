@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Loader2 } from "lucide-react"
+import { ModalityCharts } from "@/components/modality-charts" // Import chart component
 
 interface AdminStats {
   totalOpportunities: number
@@ -10,6 +11,7 @@ interface AdminStats {
   totalCareers: number
   modalityBreakdown: Array<{ name: string; count: number }>
   degreeBreakdown: Array<{ name: string; count: number }>
+  modalityByState: Array<{ name: string; total: number; [key: string]: any }> // Add breakdown type
 }
 
 function useCountUp(end: number, duration = 2000) {
@@ -83,7 +85,9 @@ export function AdminStats({ opportunities }: AdminStatsProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {" "}
+      {/* Increased spacing */}
       {/* Main Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-lg p-6 text-center hover:shadow-md transition-shadow">
@@ -106,7 +110,12 @@ export function AdminStats({ opportunities }: AdminStatsProps) {
           <div className="text-sm text-muted-foreground">Carreras Diferentes</div>
         </div>
       </div>
-
+      {stats.modalityBreakdown.length > 0 && (
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-[#0C2B4E] mb-4">Análisis de Modalidades</h3>
+          <ModalityCharts nationalData={stats.modalityBreakdown} stateData={stats.modalityByState} />
+        </div>
+      )}
       {/* Breakdown Stats */}
       {stats.modalityBreakdown.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
