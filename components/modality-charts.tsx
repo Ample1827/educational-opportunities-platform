@@ -33,7 +33,13 @@ interface ModalityChartsProps {
   stateData: StateModalityData[]
 }
 
-const COLORS = ["#0C2B4E", "#1A3D64", "#1D546C", "#4ade80", "#f43f5e"]
+const COLORS = [
+  "var(--color-chart-1)",
+  "var(--color-chart-2)",
+  "var(--color-chart-3)",
+  "var(--color-chart-4)",
+  "var(--color-chart-5)",
+]
 
 export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps) {
   const [filterValue, setFilterValue] = useState<string>("limit-10")
@@ -69,7 +75,7 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-      <Card className="w-full shadow-md border-t-4 border-t-[#0C2B4E]">
+      <Card className="w-full shadow-md border-t-4 border-t-primary">
         <CardHeader>
           <CardTitle>Distribución Nacional por Modalidad</CardTitle>
           <CardDescription>Porcentaje de carreras en cada modalidad a nivel nacional</CardDescription>
@@ -100,7 +106,7 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
         </CardContent>
       </Card>
 
-      <Card className="w-full shadow-md border-t-4 border-t-[#1D546C]">
+      <Card className="w-full shadow-md border-t-4 border-t-secondary">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <CardTitle>Distribución por Estado</CardTitle>
