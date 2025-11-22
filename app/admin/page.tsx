@@ -30,8 +30,13 @@ interface Stats {
   totalUniversities: number
   totalStates: number
   totalCareers: number
+  totalLicenciaturas: number
+  totalPosgrados: number
   modalityBreakdown: Array<{ name: string; count: number }>
   degreeBreakdown: Array<{ name: string; count: number }>
+  typeBreakdown: Array<{ name: string; count: number }>
+  topUniversities: Array<{ name: string; count: number }>
+  topStates: Array<{ name: string; count: number }>
 }
 
 export default function AdminPage() {
@@ -201,7 +206,7 @@ export default function AdminPage() {
   }
 
   // Calculate top states from stats
-  const topStates = stats?.modalityBreakdown ? stats.modalityBreakdown.slice(0, 5) : []
+  const topStates = stats?.topStates ? stats.topStates.slice(0, 5) : []
 
   return (
     <AdminLayout onLogout={handleLogout} activeTab={activeTab} onTabChange={setActiveTab}>
@@ -273,6 +278,31 @@ export default function AdminPage() {
                     </div>
                     <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-purple-500" />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* New Cards for Licenciatura/Posgrado */}
+                <Card className="p-6 border border-border bg-card hover:shadow-lg transition-shadow">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Licenciaturas</p>
+                      <h3 className="text-3xl font-bold text-foreground mt-2">{stats.totalLicenciaturas}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center">
+                      <GraduationCap className="w-6 h-6 text-orange-500" />
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-6 border border-border bg-card hover:shadow-lg transition-shadow">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Posgrados</p>
+                      <h3 className="text-3xl font-bold text-foreground mt-2">{stats.totalPosgrados}</h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center">
+                      <GraduationCap className="w-6 h-6 text-indigo-500" />
                     </div>
                   </div>
                 </Card>
