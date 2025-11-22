@@ -96,7 +96,7 @@ export function StatsSection() {
 
   // Envolvemos todo en una <section> con la ref
   return (
-    <section ref={sectionRef} className="py-12 bg-slate-50">
+    <section ref={sectionRef} className="py-12 bg-muted/30">
       {" "}
       {/* Added background color */}
       {loading && (
@@ -122,8 +122,8 @@ export function StatsSection() {
           >
             {/* --- TARJETA 1 (Programas) --- */}
             <div className="animated-border-wrapper">
-              <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
-                <div className="text-4xl md:text-5xl font-bold text-[#0C2B4E] mb-2">
+              <div className="animated-border-inner p-8 text-center card-lift bg-card shadow-sm">
+                <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
                   {animatedOpportunities.toLocaleString()}+
                 </div>
                 <div className="text-lg text-muted-foreground font-medium">Programas</div>
@@ -132,16 +132,16 @@ export function StatsSection() {
 
             {/* --- TARJETA 2 (Tecnológicos) --- */}
             <div className="animated-border-wrapper">
-              <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
-                <div className="text-4xl md:text-5xl font-bold text-[#1D546C] mb-2">{animatedUniversities}</div>
+              <div className="animated-border-inner p-8 text-center card-lift bg-card shadow-sm">
+                <div className="text-4xl md:text-5xl font-bold text-secondary mb-2">{animatedUniversities}</div>
                 <div className="text-lg text-muted-foreground font-medium">Tecnológicos</div>
               </div>
             </div>
 
             {/* --- TARJETA 3 (Estados) --- */}
             <div className="animated-border-wrapper">
-              <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
-                <div className="text-4xl md:text-5xl font-bold text-[#1A3D64] mb-2">{animatedStates}</div>
+              <div className="animated-border-inner p-8 text-center card-lift bg-card shadow-sm">
+                <div className="text-4xl md:text-5xl font-bold text-primary mb-2">{animatedStates}</div>
                 <div className="text-lg text-muted-foreground font-medium">Estados</div>
               </div>
             </div>
@@ -151,7 +151,7 @@ export function StatsSection() {
               isVisible ? "animate-slide-up opacity-100" : "opacity-0 translate-y-8"
             }`}
           >
-            <h2 className="text-2xl font-bold text-center text-[#0C2B4E] mb-8">Panorama Educativo Nacional</h2>
+            <h2 className="text-2xl font-bold text-center text-foreground mb-8">Panorama Educativo Nacional</h2>
             <ModalityCharts nationalData={stats.modalityBreakdown || []} stateData={stats.modalityByState || []} />
           </div>
         </div>

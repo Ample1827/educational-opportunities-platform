@@ -4,78 +4,105 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color palette to custom blue/gray scheme */
+  /* Light Mode Palette (Custom Blue/Gray Scheme) */
   --background: #f4f4f4;
   --foreground: #0c2b4e;
+
   --card: #ffffff;
   --card-foreground: #0c2b4e;
+
   --popover: #ffffff;
   --popover-foreground: #0c2b4e;
-  --primary: #1a3d64;
+
+  --primary: #1a3d64; /* Medium Blue */
   --primary-foreground: #f4f4f4;
-  --secondary: #1d546c;
+
+  --secondary: #1d546c; /* Teal Blue */
   --secondary-foreground: #f4f4f4;
+
   --muted: #e8e8e8;
-  --muted-foreground: #666666;
-  --accent: #0c2b4e;
-  --accent-foreground: #f4f4f4;
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: #e0e0e0;
-  --input: #f8f8f8;
+  --muted-foreground: #64748b;
+
+  --accent: #e0e7ff;
+  --accent-foreground: #0c2b4e;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #f4f4f4;
+
+  --border: #cbd5e1;
+  --input: #f1f5f9;
   --ring: #1a3d64;
-  --chart-1: #1a3d64;
-  --chart-2: #1d546c;
-  --chart-3: #0c2b4e;
-  --chart-4: #26517a;
-  --chart-5: #1a3d64;
+
   --radius: 0.625rem;
+
+  /* Sidebar Variables */
   --sidebar: #ffffff;
   --sidebar-foreground: #0c2b4e;
   --sidebar-primary: #1a3d64;
   --sidebar-primary-foreground: #f4f4f4;
-  --sidebar-accent: #1d546c;
-  --sidebar-accent-foreground: #f4f4f4;
-  --sidebar-border: #e0e0e0;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0c2b4e;
+  --sidebar-border: #e2e8f0;
   --sidebar-ring: #1a3d64;
+
+  /* Chart Colors (Light Mode) */
+  --chart-1: #0c2b4e;
+  --chart-2: #1a3d64;
+  --chart-3: #1d546c;
+  --chart-4: #4ade80;
+  --chart-5: #f43f5e;
 }
 
 .dark {
-  --background: #0c2b4e;
-  --foreground: #f4f4f4;
-  --card: #1a3d64;
-  --card-foreground: #f4f4f4;
-  --popover: #1a3d64;
-  --popover-foreground: #f4f4f4;
-  --primary: #4a7ba7;
-  --primary-foreground: #0c2b4e;
-  --secondary: #5a8fbf;
-  --secondary-foreground: #0c2b4e;
-  --muted: #2a4a6e;
-  --muted-foreground: #b0b0b0;
-  --accent: #f4f4f4;
-  --accent-foreground: #0c2b4e;
-  --destructive: oklch(0.596 0.282 27.344);
-  --destructive-foreground: oklch(0.97 0.01 0);
-  --border: #2a4a6e;
-  --input: #0f334a;
-  --ring: #4a7ba7;
-  --chart-1: #4a7ba7;
-  --chart-2: #5a8fbf;
-  --chart-3: #f4f4f4;
-  --chart-4: #6ba3d3;
-  --chart-5: #4a7ba7;
-  --sidebar: #1a3d64;
-  --sidebar-foreground: #f4f4f4;
-  --sidebar-primary: #4a7ba7;
-  --sidebar-primary-foreground: #0c2b4e;
-  --sidebar-accent: #5a8fbf;
-  --sidebar-accent-foreground: #0c2b4e;
-  --sidebar-border: #2a4a6e;
-  --sidebar-ring: #4a7ba7;
+  /* Dark Mode Palette (High Contrast) */
+  --background: #020817; /* Very dark blue/black for main background */
+  --foreground: #f8fafc; /* Almost white text */
+
+  --card: #0f172a; /* Dark slate for cards */
+  --card-foreground: #f8fafc;
+
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
+
+  --primary: #38bdf8; /* Bright Sky Blue for primary actions/text */
+  --primary-foreground: #0f172a;
+
+  --secondary: #2dd4bf; /* Bright Teal */
+  --secondary-foreground: #0f172a;
+
+  --muted: #1e293b; /* Muted dark blue/slate */
+  --muted-foreground: #94a3b8;
+
+  --accent: #1e293b; /* Dark accent background */
+  --accent-foreground: #f8fafc;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #38bdf8;
+
+  /* Sidebar Variables (Dark Mode) */
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #38bdf8;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #38bdf8;
+
+  /* Chart Colors (Dark Mode - Brighter for contrast) */
+  --chart-1: #38bdf8;
+  --chart-2: #818cf8;
+  --chart-3: #2dd4bf;
+  --chart-4: #4ade80;
+  --chart-5: #f43f5e;
 }
 
 @theme inline {
+  /* ... existing theme configuration ... */
   --font-sans: "Geist", "Geist Fallback";
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
@@ -116,6 +143,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ... existing base and component styles ... */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -132,13 +160,18 @@
 }
 
 @layer components {
+  /* ... existing animations ... */
   .gradient-blur {
     @apply blur-3xl;
   }
   .fade-in {
     @apply animate-in fade-in duration-700;
   }
-
+  /* Updated background color for animated border inner to use card variables */
+  .animated-border-inner {
+    @apply bg-card text-card-foreground rounded-[0.5625rem] w-full h-full;
+  }
+  /* ... rest of existing component styles ... */
   @keyframes slide-up {
     from {
       opacity: 0;
@@ -287,10 +320,6 @@
     background-size: 300% 300%;
     background-image: linear-gradient(-45deg, #1a3d64, #c3cee6, #1d546c, #1a3d64);
     animation: animate-gradient-slide 6s ease-in-out infinite;
-  }
-
-  .animated-border-inner {
-    @apply bg-card text-card-foreground rounded-[0.5625rem] w-full h-full;
   }
 
   @keyframes ken-burns {
