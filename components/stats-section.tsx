@@ -1,27 +1,23 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ModalityCharts } from "@/components/modality-charts"
+import { ModalityCharts } from "@/components/modality-charts" // Import the new chart component
 
 interface Stats {
   totalOpportunities: number
   totalUniversities: number
   totalStates: number
-  totalPrograms: number
-  totalLicenciaturas: number
-  totalPosgrados: number
-  modalityBreakdown: Array<{ name: string; count: number }>
+  totalCareers: number
+  modalityBreakdown: Array<{ name: string; count: number }> // Add breakdown types
   modalityByState: Array<{ name: string; total: number; [key: string]: any }>
-  modalityNames: string[]
-  stateLimitApplied: number | "all"
 }
 
-type StateLimitOption = "3" | "5" | "10" | "all"
-
+// Añadido 'start' para controlar cuándo empieza la animación
 function useCountUp(end: number, duration = 2000, start = false) {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
+    // No empezar si 'start' es false
     if (!start) return
 
     let startTime: number
@@ -41,7 +37,7 @@ function useCountUp(end: number, duration = 2000, start = false) {
 
     animationFrame = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(animationFrame)
-  }, [end, duration, start])
+  }, [end, duration, start]) // Añadido 'start' a las dependencias
 
   return count
 }
@@ -49,8 +45,8 @@ function useCountUp(end: number, duration = 2000, start = false) {
 export function StatsSection() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [stateLimit, setStateLimit] = useState<StateLimitOption>("10")
 
+  // Lógica de IntersectionObserver
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -62,7 +58,9 @@ export function StatsSection() {
           observer.unobserve(entry.target)
         }
       },
-      { threshold: 0.1 }
+      {
+        threshold: 0.1, // Activa cuando el 10% es visible
+      },
     )
 
     if (sectionRef.current) {
@@ -76,14 +74,13 @@ export function StatsSection() {
     }
   }, [])
 
+  // Pasamos 'isVisible' como el trigger 'start'
   const animatedOpportunities = useCountUp(stats?.totalOpportunities || 0, 2000, isVisible)
   const animatedUniversities = useCountUp(stats?.totalUniversities || 0, 2000, isVisible)
   const animatedStates = useCountUp(stats?.totalStates || 0, 2000, isVisible)
 
-  // Fetch stats with stateLimit parameter
   useEffect(() => {
-    setLoading(true)
-    fetch(`/api/stats?stateLimit=${stateLimit}`)
+    fetch("/api/stats")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -95,38 +92,35 @@ export function StatsSection() {
         console.error("Error loading stats:", error)
         setLoading(false)
       })
-  }, [stateLimit])
+  }, [])
 
-  const stateLimitOptions: { value: StateLimitOption; label: string }[] = [
-    { value: "3", label: "Top 3" },
-    { value: "5", label: "Top 5" },
-    { value: "10", label: "Top 10" },
-    { value: "all", label: "Todos" },
-  ]
-
+  // Envolvemos todo en una <section> con la ref
   return (
     <section ref={sectionRef} className="py-12 bg-slate-50">
+      {" "}
+      {/* Added background color */}
       {loading && (
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-card border border-border rounded-xl p-8 text-center animate-pulse">
-                <div className="w-1/2 h-10 bg-muted rounded-md mx-auto mb-2"></div>
-                <div className="w-1/3 h-6 bg-muted rounded-md mx-auto"></div>
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {[1, 2, 3].map((i) => (
+            // Esqueleto con 'pulse' en lugar de 'spin' para una carga más suave
+            <div key={i} className="bg-card border border-border rounded-xl p-8 text-center animate-pulse">
+              <div className="w-1/2 h-10 bg-muted rounded-md mx-auto mb-2"></div>
+              <div className="w-1/3 h-6 bg-muted rounded-md mx-auto"></div>
+            </div>
+          ))}
         </div>
       )}
-
       {!loading && stats && (
         <div className="container mx-auto px-4">
+          {" "}
+          {/* Added container wrapper */}
           {/* Animated Stats Cards */}
           <div
             className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 transition-all duration-700 ${
               isVisible ? "animate-slide-up" : "opacity-0 translate-y-4"
             }`}
           >
+            {/* --- TARJETA 1 (Programas) --- */}
             <div className="animated-border-wrapper">
               <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
                 <div className="text-4xl md:text-5xl font-bold text-[#0C2B4E] mb-2">
@@ -136,6 +130,7 @@ export function StatsSection() {
               </div>
             </div>
 
+            {/* --- TARJETA 2 (Tecnológicos) --- */}
             <div className="animated-border-wrapper">
               <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
                 <div className="text-4xl md:text-5xl font-bold text-[#1D546C] mb-2">{animatedUniversities}</div>
@@ -143,6 +138,7 @@ export function StatsSection() {
               </div>
             </div>
 
+            {/* --- TARJETA 3 (Estados) --- */}
             <div className="animated-border-wrapper">
               <div className="animated-border-inner p-8 text-center card-lift bg-white shadow-sm">
                 <div className="text-4xl md:text-5xl font-bold text-[#1A3D64] mb-2">{animatedStates}</div>
@@ -150,44 +146,13 @@ export function StatsSection() {
               </div>
             </div>
           </div>
-
-          {/* Charts Section */}
           <div
             className={`transition-all duration-700 delay-300 ${
               isVisible ? "animate-slide-up opacity-100" : "opacity-0 translate-y-8"
             }`}
           >
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-              <h2 className="text-2xl font-bold text-center text-[#0C2B4E]">
-                Panorama Educativo Nacional
-              </h2>
-              
-              {/* State Limit Selector */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="stateLimit" className="text-sm font-medium text-muted-foreground">
-                  Estados a mostrar:
-                </label>
-                <select
-                  id="stateLimit"
-                  value={stateLimit}
-                  onChange={(e) => setStateLimit(e.target.value as StateLimitOption)}
-                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm 
-                           focus:outline-none focus:ring-2 focus:ring-[#0C2B4E] focus:border-transparent
-                           cursor-pointer hover:border-gray-400 transition-colors"
-                >
-                  {stateLimitOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <ModalityCharts 
-              nationalData={stats.modalityBreakdown || []} 
-              stateData={stats.modalityByState || []} 
-            />
+            <h2 className="text-2xl font-bold text-center text-[#0C2B4E] mb-8">Panorama Educativo Nacional</h2>
+            <ModalityCharts nationalData={stats.modalityBreakdown || []} stateData={stats.modalityByState || []} />
           </div>
         </div>
       )}
