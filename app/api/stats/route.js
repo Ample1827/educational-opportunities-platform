@@ -1,169 +1,146 @@
 import { getDatabase } from "@/lib/mongodb"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url)
-    
-    // Get stateLimit param: "all", "3", "5", "10", etc. Default to "all"
-    const stateLimitParam = searchParams.get("stateLimit") || "all"
-    const stateLimit = stateLimitParam === "all" ? null : parseInt(stateLimitParam, 10)
-
     const db = await getDatabase()
     const collection = db.collection("tecnologicos")
 
-    // Basic counts
-    const [totalOpportunities, uniqueUniversities, uniqueStates, uniquePrograms] =
+    const [totalOpportunities, totalUniversities, totalStates, totalPrograms, totalLicenciaturas, totalPosgrados] =
       await Promise.all([
         collection.countDocuments(),
-        collection.distinct("Nombre del tecnológico"),
-        collection.distinct("Estado"),
-        collection.distinct("Programa"),
+        collection.distinct("Nombre del tecnológico").then((arr) => arr.length),
+        collection.distinct("Estado").then((arr) => arr.length),
+        collection
+          .distinct("Programa")
+          .then((arr) => arr.length), // Updated from 'Carrera'
+        collection.countDocuments({ Tipo: "Licenciatura" }), // NEW
+        collection.countDocuments({ Tipo: "Posgrado" }), // NEW
       ])
 
-    const totalUniversities = uniqueUniversities.length
-    const totalStates = uniqueStates.length
-    const totalPrograms = uniquePrograms.length
-
-    // Aggregations
     const [
       modalityBreakdown,
       degreeBreakdown,
-      typeBreakdown,
+      typeBreakdown, // NEW: Breakdown by Licenciatura/Posgrado
       topUniversities,
       topStates,
-      modalityBreakdownByState,
+      modalityBreakdownByState, // NEW: Aggregation for modality by state
     ] = await Promise.all([
-      collection.aggregate([
-        { $match: { Modalidad: { $exists: true, $ne: null } } },
-        { $group: { _id: "$Modalidad", count: { $sum: 1 } } },
-        { $sort: { count: -1 } }
-      ]).toArray(),
+      collection.aggregate([{ $group: { _id: "$Modalidad", count: { $sum: 1 } } }, { $sort: { count: -1 } }]).toArray(),
 
-      collection.aggregate([
-        { $group: { _id: "$Grado que otorga", count: { $sum: 1 } } },
-        { $sort: { count: -1 } }
-      ]).toArray(),
+      collection
+        .aggregate([{ $group: { _id: "$Grado que otorga", count: { $sum: 1 } } }, { $sort: { count: -1 } }])
+        .toArray(),
 
-      collection.aggregate([
-        { $group: { _id: "$Tipo", count: { $sum: 1 } } },
-        { $sort: { count: -1 } }
-      ]).toArray(),
+      // NEW: Type breakdown
+      collection
+        .aggregate([{ $group: { _id: "$Tipo", count: { $sum: 1 } } }, { $sort: { count: -1 } }])
+        .toArray(),
 
-      collection.aggregate([
-        { $group: { _id: "$Nombre del tecnológico", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 },
-      ]).toArray(),
+      // NEW: Top universities by program count
+      collection
+        .aggregate([
+          { $group: { _id: "$Nombre del tecnológico", count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+        ])
+        .toArray(),
 
-      collection.aggregate([
-        { $group: { _id: "$Estado", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 }
-      ]).toArray(),
+      // NEW: Top states by program count
+      collection
+        .aggregate([{ $group: { _id: "$Estado", count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: 10 }])
+        .toArray(),
 
-      collection.aggregate([
-        { $match: { Estado: { $exists: true, $ne: null } } },
-        {
-          $group: {
-            _id: { state: "$Estado", modality: "$Modalidad" },
-            count: { $sum: 1 },
+      // NEW: Add aggregation for modality by state
+      collection
+        .aggregate([
+          {
+            $group: {
+              _id: { state: "$Estado", modality: "$Modalidad" },
+              count: { $sum: 1 },
+            },
           },
-        },
-        { $sort: { "_id.state": 1 } },
-      ]).toArray(),
+          { $sort: { "_id.state": 1 } },
+        ])
+        .toArray(),
     ])
 
-    // Process modality by state data
-    const allModalities = [...new Set(modalityBreakdown.map(m => m._id).filter(Boolean))]
-    const modalityByStateMap = new Map<string, Record<string, any>>()
+    const modalityByStateMap = new Map()
 
-    for (const item of modalityBreakdownByState) {
-      const state = item._id?.state
-      const modality = item._id?.modality
-      const count = item.count
+    // Get all unique modalities to ensure we have keys for them
+    const allModalities = new Set()
 
-      if (!state) continue
+    // Group by state
+    modalityBreakdownByState[0] &&
+      modalityBreakdownByState.forEach((item) => {
+        const state = item._id.state
+        const modality = item._id.modality
+        const count = item.count
 
-      if (!modalityByStateMap.has(state)) {
-        const initial: Record<string, any> = { name: state, total: 0 }
-        allModalities.forEach(mod => { initial[mod] = 0 })
-        modalityByStateMap.set(state, initial)
-      }
+        allModalities.add(modality)
 
-      const stateData = modalityByStateMap.get(state)!
-      if (modality) {
+        if (!modalityByStateMap.has(state)) {
+          modalityByStateMap.set(state, { name: state, total: 0 })
+        }
+
+        const stateData = modalityByStateMap.get(state)
         stateData[modality] = count
-      }
-      stateData.total += count
-    }
+        stateData.total += count
+      })
 
-    // Convert to array, sort by total, and add percentages
-    let modalityByState = Array.from(modalityByStateMap.values())
-      .map(stateData => {
+    // Convert map to array and calculate percentages
+    const modalityByState = Array.from(modalityByStateMap.values())
+      .map((stateData) => {
         const result = { ...stateData }
-        allModalities.forEach(mod => {
+        // Add percentage fields
+        allModalities.forEach((mod) => {
           const count = result[mod] || 0
-          result[`${mod}Pct`] = result.total > 0 
-            ? Number.parseFloat(((count / result.total) * 100).toFixed(1)) 
-            : 0
+          result[`${mod}Pct`] = result.total > 0 ? Number.parseFloat(((count / result.total) * 100).toFixed(1)) : 0
+          result[mod] = count // Ensure 0s are present
         })
         return result
       })
-      .sort((a, b) => b.total - a.total)
-
-    // Apply state limit if specified
-    if (stateLimit && stateLimit > 0) {
-      modalityByState = modalityByState.slice(0, stateLimit)
-    }
-
-    const totalLicenciaturas = typeBreakdown.find(t => t._id === "Licenciatura")?.count || 0
-    const totalPosgrados = typeBreakdown.find(t => t._id === "Posgrado")?.count || 0
+      .sort((a, b) => b.total - a.total) // Sort by total programs desc
 
     return NextResponse.json({
       success: true,
       data: {
+        // Overall stats
         totalOpportunities,
         totalUniversities,
         totalStates,
-        totalPrograms,
-        totalLicenciaturas,
-        totalPosgrados,
+        totalPrograms, // Updated from totalCareers
+        totalLicenciaturas, // NEW
+        totalPosgrados, // NEW
 
-        modalityBreakdown: modalityBreakdown.map(m => ({
+        // Breakdowns
+        modalityBreakdown: modalityBreakdown.map((m) => ({
           name: m._id || "Sin modalidad",
           count: m.count,
         })),
-        degreeBreakdown: degreeBreakdown.map(d => ({
+        degreeBreakdown: degreeBreakdown.map((d) => ({
           name: d._id || "Sin grado",
           count: d.count,
         })),
-        typeBreakdown: typeBreakdown.map(t => ({
+        typeBreakdown: typeBreakdown.map((t) => ({
           name: t._id || "Sin tipo",
           count: t.count,
-        })),
+        })), // NEW
 
-        topUniversities: topUniversities.map(u => ({
-          name: u._id || "Desconocido",
+        // Top rankings
+        topUniversities: topUniversities.map((u) => ({
+          name: u._id,
           count: u.count,
-        })),
-        topStates: topStates.map(s => ({
-          name: s._id || "Desconocido",
+        })), // NEW
+        topStates: topStates.map((s) => ({
+          name: s._id,
           count: s.count,
         })),
-
-        modalityByState,
-        modalityNames: allModalities,
-        
-        // Include metadata about the limit applied
-        stateLimitApplied: stateLimit || "all",
+        modalityByState, // Return the processed breakdown
       },
     })
   } catch (error) {
     console.error("Error fetching stats:", error)
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch statistics" },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: "Failed to fetch statistics" }, { status: 500 })
   }
 }
