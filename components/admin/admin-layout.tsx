@@ -6,6 +6,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { LayoutDashboard, Settings, LogOut, Menu, X } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -63,6 +64,14 @@ export function AdminLayout({ children, onLogout, activeTab = "dashboard", onTab
             </button>
           </nav>
 
+          {/* ThemeToggle */}
+          <div className="p-4">
+            <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
+              <span className="text-sm font-medium text-muted-foreground">Tema</span>
+              <ThemeToggle />
+            </div>
+          </div>
+
           {/* Logout */}
           <div className="p-4 border-t border-border">
             <Button
@@ -90,9 +99,12 @@ export function AdminLayout({ children, onLogout, activeTab = "dashboard", onTab
         {/* Mobile menu button */}
         <div className="sm:hidden bg-card border-b border-border p-4 flex justify-between items-center">
           <h1 className="font-bold text-foreground">Ample Admin</h1>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-foreground hover:bg-muted p-2 rounded">
-            <Menu className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-foreground hover:bg-muted p-2 rounded">
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
