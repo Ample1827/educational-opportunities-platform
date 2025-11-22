@@ -45,11 +45,8 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
   }))
 
   // Prepare data for the state bar chart
-  // If specific state is selected, show that one, otherwise show top 10
-  const barData =
-    selectedState === "all"
-      ? stateData.slice(0, 10) // Top 10 by default
-      : stateData.filter((s) => s.name === selectedState)
+  // If specific state is selected, show that one, otherwise show all available data
+  const barData = selectedState === "all" ? stateData : stateData.filter((s) => s.name === selectedState)
 
   // Get keys for the stacked bar chart (excluding name, total, and Pct fields)
   const dataKeys =
@@ -102,7 +99,7 @@ export function ModalityCharts({ nationalData, stateData }: ModalityChartsProps)
                 <SelectValue placeholder="Filtrar por estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Top 10 Estados</SelectItem>
+                <SelectItem value="all">Todos los listados</SelectItem>
                 {[...stateData]
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((state) => (

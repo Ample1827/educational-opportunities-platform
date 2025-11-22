@@ -62,7 +62,7 @@ export function StatsSection() {
           observer.unobserve(entry.target)
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     )
 
     if (sectionRef.current) {
@@ -158,10 +158,8 @@ export function StatsSection() {
             }`}
           >
             <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-              <h2 className="text-2xl font-bold text-center text-[#0C2B4E]">
-                Panorama Educativo Nacional
-              </h2>
-              
+              <h2 className="text-2xl font-bold text-center text-[#0C2B4E]">Panorama Educativo Nacional</h2>
+
               {/* State Limit Selector */}
               <div className="flex items-center gap-2">
                 <label htmlFor="stateLimit" className="text-sm font-medium text-muted-foreground">
@@ -171,7 +169,7 @@ export function StatsSection() {
                   id="stateLimit"
                   value={stateLimit}
                   onChange={(e) => setStateLimit(e.target.value as StateLimitOption)}
-                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm 
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-[#0C2B4E] font-medium
                            focus:outline-none focus:ring-2 focus:ring-[#0C2B4E] focus:border-transparent
                            cursor-pointer hover:border-gray-400 transition-colors"
                 >
@@ -184,10 +182,7 @@ export function StatsSection() {
               </div>
             </div>
 
-            <ModalityCharts 
-              nationalData={stats.modalityBreakdown || []} 
-              stateData={stats.modalityByState || []} 
-            />
+            <ModalityCharts nationalData={stats.modalityBreakdown || []} stateData={stats.modalityByState || []} />
           </div>
         </div>
       )}
